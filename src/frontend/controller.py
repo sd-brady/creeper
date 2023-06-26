@@ -1,0 +1,43 @@
+from PyQt5 import QtWidgets as qtw
+from PyQt5 import QtGui as qtg
+from PyQt5 import QtCore as qtc
+
+from . import model
+from . import view
+from .modules import ui_main
+
+
+class MainWindow(qtw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set up Designer UI Class
+        self.ui = ui_main.Ui_MainWindow()
+        self.ui.setupUi(self)
+
+        # Main UI Code goes in the View Class
+        self.view = view.View(self.ui)
+
+        # Set Up Model Class
+        self.model = model.Model()
+
+        # Set up menubar buttons
+        self.ui.actionExit.triggered.connect(self.close)  # type: ignore
+
+        # Connect Signals and Slots
+        self.connect_signals_and_slots()
+
+        # End main UI code
+        self.show()
+
+        return
+
+    def connect_signals_and_slots(self):
+        # Connect error message box signal
+        self.view.signal_errorbox.connect(self.messagebox_error)
+
+        return
+
+    def messagebox_error(self, message):
+        qtw.QMessageBox.critical(self, "Error", message)
+        return
