@@ -61,8 +61,10 @@ class View(qtw.QWidget):
         self.canvas_ts_multiplot.update_plot(self.tests)
 
         # Update the test data table
-        print("ayye", self.tests[row]["name"])
-        self.testdata_model.place_data(self.tests[row])
+        if row == -1:
+            self.testdata_model.clear_data()
+        else:
+            self.testdata_model.place_data(self.tests[row])
 
         return
 
