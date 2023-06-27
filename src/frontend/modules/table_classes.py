@@ -51,10 +51,14 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         for col in range(len(self._headerkeys)):
             column_data = testdata_dict[self._headerkeys[col]]
             for row in range(len(column_data)):
-                self._data[col][row] = column_data[row]
+                self.setData(
+                    qtc.QModelIndex(self.index(row, col)),
+                    column_data[row],
+                    qtc.Qt.EditRole,  # type: ignore
+                )
 
         self.dataChanged.emit(
-            self.index_upperleft, self.index_lowerright, [qtc.Qt.DisplayRole] # type: ignore
+            self.index_upperleft, self.index_lowerright, [qtc.Qt.DisplayRole]  # type: ignore
         )
 
         return
