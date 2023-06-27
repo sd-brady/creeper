@@ -2,36 +2,15 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 import pandas as pd
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar,
+)
 import matplotlib.pyplot as plt
 
 from .modules import canvas_classes
 from .modules import table_classes
 from .modules import canvas_classes
-
-# DONE: Remove the padding from the single test plot on the
-#   Test Suite tab.
-#   - Removed the padding by switching to maptlotlib. Plots are looking nice
-#   now.
-# DONE: Stylize the single test plot on the Test Suite tab.
-# TODO: Change the listbox to a table on the Test Suite tab.
-# DONE: Change the data structure of self.tests in the View class.
-#   The data structure should be a list of dictionaries, so that
-#   the dictionary for a test can directly be passed into functions.
-#   This will make updating tables and plots easier.
-# TODO: Add functionality to remove the a test from the test list.
-# TODO: Add functionality to rename tests.
-# DONE: Figure out why there is stairstepping in the in the QChart plots.
-#   - Fixed by changing from PyQt charts to matplotlib
-# TODO: Begin adding the load/save functionality so that this can be
-#   worked on as the project progresses (rather than trying to do it all
-#   all at the end). This will make development easier because we won't
-#   have to load in the tests every time we launch the GUI.
-# DONE: Add functionality for the global test plot (i.e., shows all of the test
-#   data on one plot).
-# TODO: Make change to test data viewing table so that the active data shown
-#   is completely controlled by the data for the test selected in the test list.
-# TODO: Add functionality to move tests up and down in the test list.
 
 
 class View(qtw.QWidget):
@@ -51,12 +30,16 @@ class View(qtw.QWidget):
         self.config_buttons()
         self.config_listboxes()
         self.config_plots()
+        self.config_comboboxes()
         self.config_signals_slots()
 
         return
 
+    def config_comboboxes(self):
+        self._ui.verticalLayout_9.setAlignment(self._ui.combo_ts_plotpicker, qtc.Qt.AlignRight)  # type: ignore
+        return
+
     def config_signals_slots(self):
-        self._ui.list_ts_testlist.currentRowChanged.connect(self.testlist_changed)
         return
 
     def testlist_changed(self, row):
@@ -71,11 +54,17 @@ class View(qtw.QWidget):
 
         # Set up the single strain plot on the Test Suite Tab
         self.canvas_ts_singleplot = canvas_classes.SinglePlot_Strain_Canvas(self)
+        toolbar1 = NavigationToolbar(self.canvas_ts_singleplot, self)
+        self._ui.verticalLayout_13.addWidget(toolbar1)
         self._ui.verticalLayout_13.addWidget(self.canvas_ts_singleplot)
+        self._ui.verticalLayout_13.setAlignment(toolbar1, qtc.Qt.AlignHCenter)  # type: ignore
 
         # Set up the single strain plot on the Test Suite Tab
         self.canvas_ts_multiplot = canvas_classes.MultiPlot_Strain_Canvas(self)
+        toolbar2 = NavigationToolbar(self.canvas_ts_multiplot, self)
+        self._ui.verticalLayout_14.addWidget(toolbar2)
         self._ui.verticalLayout_14.addWidget(self.canvas_ts_multiplot)
+        self._ui.verticalLayout_14.setAlignment(toolbar2, qtc.Qt.AlignHCenter)  # type: ignore
 
         return
 
@@ -116,7 +105,16 @@ class View(qtw.QWidget):
 
     def config_buttons(self):
         self._ui.button_importtest.clicked.connect(self.import_test_data)
+        self._ui.button_delete_test.clicked.connect(self.delete_test)
         return
+
+    def delete_test(self):
+        active_test = self._ui.list_ts_testlist.currentRow()
+        if active_test == 1:
+            pass
+        else:
+            self.tests.pop(active_test)
+            self._ui.list_ts_testlist.takeItem(active_test)
 
     def import_test_data(self):
         filename = self.select_file()

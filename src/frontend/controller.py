@@ -36,6 +36,7 @@ class MainWindow(qtw.QMainWindow):
         # Connect error message box signal
         self.view.signal_errorbox.connect(self.messagebox_error)
 
+        self.ui.list_ts_testlist.currentRowChanged.connect(self.view.testlist_changed)
         return
 
     def messagebox_error(self, message):

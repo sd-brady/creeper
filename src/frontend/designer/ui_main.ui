@@ -153,7 +153,7 @@
                    </property>
                    <property name="font">
                     <font>
-                     <pointsize>14</pointsize>
+                     <pointsize>9</pointsize>
                     </font>
                    </property>
                    <property name="editTriggers">
@@ -161,12 +161,6 @@
                    </property>
                    <property name="textElideMode">
                     <enum>Qt::ElideMiddle</enum>
-                   </property>
-                   <property name="modelColumn">
-                    <number>0</number>
-                   </property>
-                   <property name="itemAlignment">
-                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -277,6 +271,30 @@
                <number>0</number>
               </property>
               <item>
+               <widget class="QComboBox" name="combo_ts_plotpicker">
+                <item>
+                 <property name="text">
+                  <string>Strain vs. Time</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Strain Rate vs. Time</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Applied Deviatoric Stress vs. Time</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Temperature vs. Time</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
                <widget class="QFrame" name="frame_ts_singleplot">
                 <property name="minimumSize">
                  <size>
@@ -346,6 +364,9 @@
                </widget>
               </item>
              </layout>
+             <zorder>frame_ts_singleplot</zorder>
+             <zorder>combo_ts_plotpicker</zorder>
+             <zorder>frame_ts_multiplot</zorder>
             </widget>
            </item>
           </layout>
