@@ -23,6 +23,13 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         self.num_rows = 5000
         self.new_data()
 
+        self.index_upperleft = qtc.QModelIndex(
+            self.index(0, 0),
+        )
+        self.index_lowerright = qtc.QModelIndex(
+            self.index(len(self._headerkeys), len(self._data[0]))
+        )
+
         return
 
     def new_data(self):
@@ -45,6 +52,11 @@ class TestDataTableModel(qtc.QAbstractTableModel):
             column_data = testdata_dict[self._headerkeys[col]]
             for row in range(len(column_data)):
                 self._data[col][row] = column_data[row]
+
+        self.dataChanged.emit(
+            self.index_upperleft, self.index_lowerright, [qtc.Qt.DisplayRole] # type: ignore
+        )
+
         return
 
     def validate_data(self):

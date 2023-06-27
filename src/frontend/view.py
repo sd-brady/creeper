@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from .modules import canvas_classes
 from .modules import table_classes
 from .modules import canvas_classes
+from backend import creeprate
 
 
 class View(qtw.QWidget):
@@ -27,7 +28,6 @@ class View(qtw.QWidget):
         self.tests = []
 
         self.config_tables()
-        self.config_buttons()
         self.config_listboxes()
         self.config_plots()
         self.config_comboboxes()
@@ -43,15 +43,30 @@ class View(qtw.QWidget):
         return
 
     def testlist_changed(self, row):
-        self.canvas_ts_singleplot.update_plot(self.tests[row])
-        # TODO: Change the table data
+        plotvar = self._ui.combo_ts_plotpicker.currentIndex()
+        print("row: ", row)
+
+        if row == -1:
+            self.canvas_ts_singleplot.setup_initial_figure()
+        elif plotvar == 0:
+            self.canvas_ts_singleplot.update_plot_strain(self.tests[row])
+        elif plotvar == 1:
+            self.canvas_ts_singleplot.update_plot_strainrate(self.tests[row])
+        elif plotvar == 2:
+            self.canvas_ts_singleplot.update_plot_stress(self.tests[row])
+        elif plotvar == 3:
+            self.canvas_ts_singleplot.update_plot_temp(self.tests[row])
+
+        # Update the multi-test plot
         self.canvas_ts_multiplot.update_plot(self.tests)
+
+        # Update the test data table
+        print("ayye", self.tests[row]["name"])
+        self.testdata_model.place_data(self.tests[row])
+
         return
 
     def config_plots(self):
-        # self.testplot = canvas_classes.TestSuite_SinglePlot()
-        # self._ui.verticalLayout_13.addWidget(self.testplot)
-
         # Set up the single strain plot on the Test Suite Tab
         self.canvas_ts_singleplot = canvas_classes.SinglePlot_Strain_Canvas(self)
         toolbar1 = NavigationToolbar(self.canvas_ts_singleplot, self)
@@ -103,18 +118,37 @@ class View(qtw.QWidget):
 
         return
 
-    def config_buttons(self):
-        self._ui.button_importtest.clicked.connect(self.import_test_data)
-        self._ui.button_delete_test.clicked.connect(self.delete_test)
+    def ts_plotpicker_changed(self, index):
+        test_index = self._ui.list_ts_testlist.currentRow()
+        if index == -1:
+            self.canvas_ts_singleplot.setup_initial_figure()
+        elif index == 0:
+            self.canvas_ts_singleplot.update_plot_strain(self.tests[test_index])
+        elif index == 1:
+            self.canvas_ts_singleplot.update_plot_strainrate(self.tests[test_index])
+        elif index == 2:
+            self.canvas_ts_singleplot.update_plot_stress(self.tests[test_index])
+        elif index == 3:
+            self.canvas_ts_singleplot.update_plot_temp(self.tests[test_index])
         return
 
     def delete_test(self):
         active_test = self._ui.list_ts_testlist.currentRow()
-        if active_test == 1:
+        if active_test == -1:
             pass
         else:
+            for i in range(len(self.tests)):
+                print(self.tests[i]["name"])
             self.tests.pop(active_test)
+            print("During Test Deletion")
+            for i in range(len(self.tests)):
+                print(self.tests[i]["name"])
+            self._ui.list_ts_testlist.setCurrentRow(-1)
             self._ui.list_ts_testlist.takeItem(active_test)
+
+        print("After Test Deletion")
+        for i in range(len(self.tests)):
+            print(self.tests[i]["name"])
 
     def import_test_data(self):
         filename = self.select_file()
@@ -150,6 +184,12 @@ class View(qtw.QWidget):
 
                 # Add the test name to the test dictionary
                 testdata_dict["name"] = test_name
+
+                # Add strain rate to the dictionary.
+                testdata_dict["strain_rate"] = creeprate.get_strain_rate(
+                    testdata_dict["time"], testdata_dict["strain"]
+                )
+
                 # Add the test to the global test list
                 self.tests.append(testdata_dict)
 

@@ -37,6 +37,14 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_errorbox.connect(self.messagebox_error)
 
         self.ui.list_ts_testlist.currentRowChanged.connect(self.view.testlist_changed)
+
+        self.ui.combo_ts_plotpicker.currentIndexChanged.connect(
+            self.view.ts_plotpicker_changed
+        )
+
+        self.ui.button_importtest.clicked.connect(self.view.import_test_data)
+        self.ui.button_delete_test.clicked.connect(self.view.delete_test)
+
         return
 
     def messagebox_error(self, message):
