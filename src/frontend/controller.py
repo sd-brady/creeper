@@ -2,8 +2,8 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-from . import model
 from . import view
+from . import model
 from .modules import ui_main
 
 
@@ -17,8 +17,8 @@ class MainWindow(qtw.QMainWindow):
 
         # Main UI Code goes in the View Class
         self.view = view.View(self.ui)
-
-        # Set Up Model Class
+        
+        # Set up Model
         self.model = model.Model()
 
         # Set up menubar buttons
@@ -34,16 +34,14 @@ class MainWindow(qtw.QMainWindow):
 
     def connect_signals_and_slots(self):
         # Connect error message box signal
-        self.view.signal_errorbox.connect(self.messagebox_error)
+        self.model.signal_error.connect(self.messagebox_error)
 
-        self.ui.list_ts_testlist.currentRowChanged.connect(self.view.testlist_changed)
+        # Connect test added signals
+        self.view.signal_test_added.connect(self.model.add_test)
+        self.model.signal_test_validated.connect(self.view.test_added)
 
-        self.ui.combo_ts_plotpicker.currentIndexChanged.connect(
-            self.view.ts_plotpicker_changed
-        )
-
-        self.ui.button_importtest.clicked.connect(self.view.import_test_data)
-        self.ui.button_delete_test.clicked.connect(self.view.delete_test)
+        # Connect test added signal
+        self.view.signal_test_deleted.connect(self.model.delete_test)
 
         return
 
