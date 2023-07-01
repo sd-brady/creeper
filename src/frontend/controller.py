@@ -17,7 +17,7 @@ class MainWindow(qtw.QMainWindow):
 
         # Main UI Code goes in the View Class
         self.view = view.View(self.ui)
-        
+
         # Set up Model
         self.model = model.Model()
 
@@ -33,6 +33,9 @@ class MainWindow(qtw.QMainWindow):
         return
 
     def connect_signals_and_slots(self):
+        # Connect ImportCSV button clicked signal
+        self.ui.button_importtest.clicked.connect(self.view.import_test_data)
+
         # Connect error message box signal
         self.model.signal_error.connect(self.messagebox_error)
 
@@ -43,7 +46,13 @@ class MainWindow(qtw.QMainWindow):
         # Connect test added signal
         self.view.signal_test_deleted.connect(self.model.delete_test)
 
+        self.view.ts_testlist_sel_model.currentRowChanged.connect(
+                self.model.send_test
+                )
+        self.model.signal_send_test.connect(self.view.get_test)
+
         return
+
 
     def messagebox_error(self, message):
         qtw.QMessageBox.critical(self, "Error", message)

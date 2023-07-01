@@ -37,13 +37,26 @@ class Test:
     def __init__(
         self,
         name: str,
+        stress: float,
+        color: str,
         time_unit: str,
+        temp_unit: str,
         stress_unit: str,
         TestData: TestData,
         LocalFits: LocalFits,
     ):
         # Stores the Name of the Test
         self.name = name
+
+        # Stores the deviatoric stress of the test
+        self.stress = stress
+
+        # Stores the color that the test will be plotted at.
+        self.color = color
+
+        # Stores the Currently Displayed Time Unit
+        #   Should be one of the following: "seconds", "days", "years"
+        self.temp_unit = temp_unit
 
         # Stores the Currently Displayed Time Unit
         #   Should be one of the following: "seconds", "days", "years"
@@ -94,3 +107,31 @@ class TestSuite:
             test_name_list = [test.name for test in self.test_list]
 
         return test_name_list
+
+def empty_testdata_class():
+
+    empty_testdata = TestData(
+            time_list = [],
+            strain_list = [],
+            stress_list = [],
+            temperature_list = []
+            )
+
+    return empty_testdata
+
+def empty_localfits_class():
+    empty_localfits = LocalFits()
+    return empty_localfits
+
+def empty_test_class():
+    empty_test = Test(
+                name="",
+                stress=0,
+                color="",
+                time_unit="seconds",
+                temp_unit="kelvin",
+                stress_unit="mpa",
+                TestData=empty_testdata_class(),
+                LocalFits=empty_localfits_class()
+            )
+    return empty_test

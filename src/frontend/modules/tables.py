@@ -1,6 +1,6 @@
 from PyQt5 import QtCore as qtc
-import csv
 
+from . import data_classes
 
 class TestDataTableModel(qtc.QAbstractTableModel):
     def __init__(self):
@@ -23,10 +23,10 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         self.num_rows = 5000
         self.new_data()
 
-        self.index_ul = qtc.QModelIndex(
+        self.qindex_topleft = qtc.QModelIndex(
             self.index(0, 0),
         )
-        self.index_lr = qtc.QModelIndex(
+        self.qindex_lowerright = qtc.QModelIndex(
             self.index(len(self._headerkeys), len(self._data[0]))
         )
 
@@ -41,8 +41,33 @@ class TestDataTableModel(qtc.QAbstractTableModel):
 
         return
 
+    def place_test(self, test: data_classes.Test):
+        self.clear_data()
+
+        data_list = [
+                test.test_data.time,
+                test.test_data.temperature,
+                test.test_data.stress,
+                test.test_data.strain
+                ]
+
+        for col in range(len(self._headerkeys)):
+            for row in range(len(test.test_data.time)):
+                qindex = qtc.QModelIndex(self.index(row, col))
+                self.setData(qindex, data_list[col][row], qtc.Qt.EditRole)
+
+        self.dataChanged.emit(
+            self.qindex_topleft, self.qindex_lowerright, [qtc.Qt.DisplayRole]  # type: ignore
+        )
+
+        return
+
     def clear_data(self):
         self.new_data()
+        self.dataChanged.emit(
+            self.qindex_topleft, self.qindex_lowerright, [qtc.Qt.DisplayRole]
+        )
+        print("I'm confused")
         return
 
     def place_data(self, testdata_dict):
@@ -58,7 +83,7 @@ class TestDataTableModel(qtc.QAbstractTableModel):
                 )
 
         self.dataChanged.emit(
-            self.index_ul, self.index_lr, [qtc.Qt.DisplayRole]  # type: ignore
+            self.qindex_topleft, self.qindex_lowerright, [qtc.Qt.DisplayRole]  # type: ignore
         )
 
         return
@@ -115,12 +140,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
         self.num_rows = 20
         self.new_data()
 
-        self.index_ul = qtc.QModelIndex(
-            self.index(0, 0),
-        )
-        self.index_lr = qtc.QModelIndex(
-            self.index(len(self._headerkeys), len(self._data[0]))
-        )
+        self.cur_test_count = 0
 
         return
 
@@ -137,22 +157,18 @@ class TestListTableModel(qtc.QAbstractTableModel):
         self.new_data()
         return
 
-    def place_data(self, testdata_dict):
-        self.clear_data()
+    def place_row(self, test, row):
 
-        for col in range(len(self._headerkeys)):
-            column_data = testdata_dict[self._headerkeys[col]]
-            for row in range(len(column_data)):
-                self.setData(
-                    qtc.QModelIndex(self.index(row, col)),
-                    column_data[row],
-                    qtc.Qt.EditRole,  # type: ignore
-                )
+        self._data[0][row] = test.name
+        self._data[1][row] = test.stress
+        self._data[2][row] = test.color
+        self._data[3][row] = "yes"
 
         self.dataChanged.emit(
-            self.index_ul, self.index_lr, [qtc.Qt.DisplayRole]  # type: ignore
+            qtc.QModelIndex(self.index(0, row)),
+            qtc.QModelIndex(self.index(len(self._headerkeys), row)),
+            [qtc.Qt.DisplayRole]  # type: ignore
         )
-
         return
 
     def rowCount(self, parent):
@@ -184,3 +200,17 @@ class TestListTableModel(qtc.QAbstractTableModel):
 
     def flags(self, index):
         return super().flags(index)
+
+    def add_test(self, test: data_classes.Test):
+        print(test.stress)
+        self.place_row(test, self.cur_test_count)
+        self.cur_test_count += 1
+        return
+
+    def get_test_name(self, row):
+
+        testname = self._data[0][row]
+
+        return testname
+
+

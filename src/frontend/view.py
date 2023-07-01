@@ -14,6 +14,7 @@ class View(qtw.QWidget):
     signal_errorbox = qtc.pyqtSignal(str)
     signal_test_added = qtc.pyqtSignal(data_classes.Test)
     signal_test_deleted = qtc.pyqtSignal(int)
+    segnal_request_test = qtc.pyqtSignal(data_classes.Test)
 
     def __init__(self, ui):
         super().__init__()
@@ -25,6 +26,18 @@ class View(qtw.QWidget):
         self.config_plots()
         self.config_comboboxes()
 
+        self.config_slots_and_signals()
+
+        self.initialize_variables()
+
+        return
+
+    def initialize_variables(self,):
+        self.ts_current_test = data_classes.empty_test_class()
+        return
+
+    def config_slots_and_signals(self,):
+        # Connect the signal for selected row in the Test Suite testlist table
         return
 
     def config_comboboxes(self):
@@ -76,13 +89,23 @@ class View(qtw.QWidget):
 
         return
 
+    def ts_testlist_row_changed(self, selected, deselected):
+        self.signal_test_requested(selected.row())
+        return
+    
+    def get_test(self, test):
+        if test.name == "":
+            self.testdata_model.clear_data()
+        else:
+            self.testdata_model.place_test(test)
+        return
+
     def config_testlist_table(self):
         # Set the table model
         self.testlist_model = tables.TestListTableModel()
         self._ui.table_testlist.setModel(self.testlist_model)
 
         # Set the "Active" column to a checkbox using a delegate
-
 
         self._ui.table_testlist.horizontalHeader().setFixedHeight(40)
         self._ui.table_testlist.horizontalHeader().setDefaultAlignment(
@@ -98,6 +121,8 @@ class View(qtw.QWidget):
             self._ui.table_testlist.horizontalHeader().resizeSection(
                 i, column_widths[i]
             )
+
+        self.ts_testlist_sel_model = self._ui.table_testlist.selectionModel()
 
         return
 
@@ -120,23 +145,25 @@ class View(qtw.QWidget):
                 self, "Input Dialog", "Enter Test Name: "
             )[0]
 
-
             test_data = data_classes.TestData(
-                    time_list = imported_data["time"],
-                    strain_list = imported_data["strain"],
-                    stress_list = imported_data["stress"],
-                    temperature_list = imported_data["temperature"],
-                    )
+                time_list=imported_data["time"],
+                strain_list=imported_data["strain"],
+                stress_list=imported_data["stress"],
+                temperature_list=imported_data["temperature"],
+            )
 
             # Initialize Local Fit Class for the Test
             local_fits = data_classes.LocalFits()
             test = data_classes.Test(
-                    name= test_name,
-                    time_unit= "days",
-                    stress_unit= "mpa",
-                    TestData= test_data,
-                    LocalFits= local_fits,
-                    )
+                name=test_name,
+                stress=3.,
+                color="black",
+                time_unit="days",
+                temp_unit="k",
+                stress_unit="mpa",
+                TestData=test_data,
+                LocalFits=local_fits,
+            )
             self.signal_test_added.emit(test)
 
         return
@@ -145,7 +172,7 @@ class View(qtw.QWidget):
         filename, _ = qtw.QFileDialog.getOpenFileName(
             None,
             "Select CSV File to Open...",
-            r"C:\Users\brady\Documents\GitHub\saltycreep\examples\Markham 10a",
+            r"/home/brady/projects/creeper/examples/Markham 10a",
             "CSV Files (*.csv) ;; All Files (*)",
         )
 
@@ -153,6 +180,5 @@ class View(qtw.QWidget):
 
     def test_added(self, test: data_classes.Test):
         # Add Test to the test list table
-
+        num_tests = self.testlist_model.add_test(test)
         return
-

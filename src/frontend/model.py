@@ -5,8 +5,9 @@ from .modules import data_classes
 
 class Model(qtc.QObject):
 
-    signal_test_validated = qtc.pyqtSignal(int, data_classes.TestSuite)
+    signal_test_validated = qtc.pyqtSignal(data_classes.Test)
     signal_error = qtc.pyqtSignal(str)
+    signal_send_test = qtc.pyqtSignal(data_classes.Test)
 
     def __init__(self):
         super().__init__()
@@ -19,11 +20,20 @@ class Model(qtc.QObject):
 
         if valid:
             self.test_suite.add_test(test)
-            self.signal_test_validated.emit(-1, self.test_suite)
+            self.signal_test_validated.emit(test)
         else:
             self.signal_error.emit("Invalid Test Data. Please check your input and try again.")
             pass
 
+        return
+
+    def send_test(self, selected, deselected):
+        print(selected.row())
+        print(self.test_suite.num_tests)
+        if selected.row()+1 > self.test_suite.num_tests:
+            self.signal_send_test.emit(data_classes.empty_test_class())
+        else:
+            self.signal_send_test.emit(self.test_suite.test_list[selected.row()])
         return
 
     def validate_test(self, test: data_classes.Test):
