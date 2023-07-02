@@ -18,6 +18,11 @@ class View(qtw.QWidget):
     signal_test_move_up = qtc.pyqtSignal(int)
     signal_test_move_down = qtc.pyqtSignal(int)
 
+    # Signals for the Test Suite Tab. Arg1 is the test index to edit
+    #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color, 
+    #   Arg5 is the active status
+    signal_edit_test = qtc.pyqtSignal(int, str, str, str, bool)
+
     def __init__(self, ui):
         super().__init__()
 
@@ -138,7 +143,7 @@ class View(qtw.QWidget):
                 i, column_widths[i]
             )
 
-        self.ts_testlist_sel_model = self._ui.table_testlist.selectionModel()
+        self.selmodel_testlist = self._ui.table_testlist.selectionModel()
 
         return
 
@@ -157,9 +162,11 @@ class View(qtw.QWidget):
             ).to_dict(orient="list")
 
             # Get the test name from the user
-            test_name = qtw.QInputDialog.getText(
-                self, "Input Dialog", "Enter Test Name: "
-            )[0]
+            dialog = tables.InputDialog(
+                values = ["", "", "", ""]
+            )
+            if dialog.exec():
+                inputs = dialog.getInputs()
 
             test_data = data_classes.TestData(
                 time_list=imported_data["time"],
@@ -171,13 +178,13 @@ class View(qtw.QWidget):
             # Initialize Local Fit Class for the Test
             local_fits = data_classes.LocalFits()
             test = data_classes.Test(
-                name=test_name,
-                stress=3.,
-                color="black",
+                name=inputs[0],
+                stress=inputs[1],
+                color=inputs[2],
                 time_unit="days",
                 temp_unit="k",
                 stress_unit="mpa",
-                active_state=True,
+                active_state=inputs[3],
                 test_data=test_data,
                 local_fits=local_fits,
             )
@@ -197,14 +204,14 @@ class View(qtw.QWidget):
 
     def test_added(self, test: data_classes.Test):
         # Add Test to the test list table
-        num_tests = self.testlist_model.add_test(test)
+        self.testlist_model.add_test(test)
         return
 
     def test_suite_changed(self, test_suite: data_classes.TestSuite):
 
         # Update the test list table
         self.testlist_model.place_test_suite(test_suite)
-        self.ts_testlist_sel_model.clearSelection()
+        self.selmodel_testlist.clearSelection()
 
         # Clear the single plot on the Test Suite tab
         self.canvas_ts_singleplot.setup_initial_figure()
@@ -219,13 +226,13 @@ class View(qtw.QWidget):
         return
 
     def delete_test(self):
-        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        test_index = self.selmodel_testlist.currentIndex().row()
         print("test index: ", test_index)
         self.signal_test_deleted.emit(test_index)
         return
 
     def ts_move_up(self):
-        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        test_index = self.selmodel_testlist.currentIndex().row()
         num_tests = self.testlist_model.num_rows
 
         print("test index: ", test_index)
@@ -237,10 +244,16 @@ class View(qtw.QWidget):
             pass
         else:
             self.signal_test_move_up.emit(test_index)
+
+            # Need to update move the selected cell with the test
+            self.selmodel_testlist.setCurrentIndex(
+                self.testlist_model.index(test_index - 1, 0),
+                qtc.QItemSelectionModel.SelectCurrent,
+            )
         return
 
     def ts_move_down(self):
-        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        test_index = self.selmodel_testlist.currentIndex().row()
         num_tests = self.testlist_model.num_rows
 
         print("test index: ", test_index)
@@ -253,9 +266,17 @@ class View(qtw.QWidget):
         elif test_index + 1 == num_tests:
             pass
         else:
-            print("Selected Row: ", self.ts_testlist_sel_model.currentIndex().row())
             self.signal_test_move_down.emit(test_index)
-            # Need to make selected row the row that ws just moved down
-            print("Selected Row: ", self.ts_testlist_sel_model.currentIndex().row())
+
+            # Need to update move the selected cell with the test
+            self.selmodel_testlist.setCurrentIndex(
+                self.testlist_model.index(test_index + 1, 0),
+                qtc.QItemSelectionModel.SelectCurrent,
+            )
             return
+
+    def edit_test(self):
+        test_index = self.selmodel_testlist.currentIndex().row()
+        self.signal_edit_test.emit(test_index)
+        return
 

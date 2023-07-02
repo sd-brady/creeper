@@ -275,3 +275,25 @@ class TestListComboDelegate(qtw.QStyledItemDelegate):
         )
         return
 
+class InputDialog(qtw.QDialog):
+    def __init__(self,  values:list[str], parent=None):
+        super().__init__(parent)
+        
+        labels = ["Test Name", "Applied Deviatoric Stress", "Color", "Active Status"]
+
+        buttonBox = qtw.QDialogButtonBox(qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self)
+        layout = qtw.QFormLayout(self)
+        
+        self.inputs = []
+        for i, lab in enumerate(labels):
+            self.inputs.append(qtw.QLineEdit(self, text=values[i]))
+            layout.addRow(lab, self.inputs[-1])
+        
+        layout.addWidget(buttonBox)
+        
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+    
+    def getInputs(self):
+        return tuple(input.text() for input in self.inputs)
+
