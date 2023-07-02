@@ -1,4 +1,6 @@
 from PyQt5 import QtCore as qtc
+from PyQt5 import QtWidgets as qtw
+from PyQt5 import QtGui as qtg
 
 from . import data_classes
 
@@ -136,10 +138,8 @@ class TestListTableModel(qtc.QAbstractTableModel):
             "active",
         ]
 
-        self.num_rows = 20
+        self.num_rows = 0
         self.new_data()
-
-        self.cur_test_count = 0
 
         return
 
@@ -150,6 +150,12 @@ class TestListTableModel(qtc.QAbstractTableModel):
 
         self._data = data
 
+        self.dataChanged.emit(
+            qtc.QModelIndex(self.index(0, 0)),
+            qtc.QModelIndex(self.index(len(self._headerkeys), self.num_rows)),
+            [qtc.Qt.DisplayRole]  # type: ignore
+        )
+
         return
 
     def clear_data(self):
@@ -157,7 +163,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
         return
 
     def rowCount(self, parent):
-        return len(self._data[0])
+        return self.num_rows
 
     def columnCount(self, parent):
         return len(self._headers)
@@ -187,6 +193,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
         return super().flags(index)
 
     def place_test_suite(self, test_suite: data_classes.TestSuite):
+        self.num_rows = len(test_suite.test_list)
         self.clear_data()
 
         for row in range(len(test_suite.test_list)):
@@ -205,25 +212,66 @@ class TestListTableModel(qtc.QAbstractTableModel):
             # TODO: Get color from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 2)),
-                "blue",
+                test_suite.test_list[row].color,
                 qtc.Qt.EditRole
             )
 
             # TODO: Get active state from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 3)),
-                "yes",
+                test_suite.test_list[row].active_state,
                 qtc.Qt.EditRole
             )
 
+        print(self._data)
 
-        self.dataChanged.emit(
-            qtc.QModelIndex(self.index(0, 0)),
-            qtc.QModelIndex(self.index(len(self._headerkeys), self.num_rows)),
-            [qtc.Qt.DisplayRole]  # type: ignore
-        )
+        self.refresh()
 
         return
 
+    def refresh(self):
+        self.dataChanged.emit(
+            qtc.QModelIndex(self.index(0, 0)),
+            qtc.QModelIndex(self.index(self.rowCount(None)-1, self.columnCount(None)-1)),
+        )
+        self.layoutChanged.emit()
+        return
 
+
+class TestListComboDelegate(qtw.QStyledItemDelegate):
+    items = [
+        "Blue",
+        "Orange",
+        "Green",
+        "Red",
+        "Purple",
+        "Brown",
+        "Pink",
+        "Grey",
+        "Olive",
+        "Cyan",
+    ]
+
+    def __init__(self, parent=None):
+        super(TestListComboDelegate, self).__init__(parent)
+        print(self.items[1])
+        return
+
+    def createEditor(self, parent, option, index):
+        self.editor = qtw.QComboBox(parent)
+        self.editor.addItems(self.items)
+        return self.editor
+
+    def setEditorData(self, editor, index):
+        value = index.data(qtc.Qt.DisplayRole)
+        num = self.items.index(value)
+        editor.setCurrentIndex(num)
+        return
+
+    def setModelData(self, editor, model, index):
+        value = editor.currentText()
+        model.setData(
+            index, qtc.QVariant(value), qtc.Qt.DisplayRole
+        )
+        return
 

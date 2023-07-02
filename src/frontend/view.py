@@ -15,6 +15,8 @@ class View(qtw.QWidget):
     signal_test_added = qtc.pyqtSignal(data_classes.Test)
     signal_test_deleted = qtc.pyqtSignal(int)
     signal_request_test = qtc.pyqtSignal(data_classes.Test)
+    signal_test_move_up = qtc.pyqtSignal(int)
+    signal_test_move_down = qtc.pyqtSignal(int)
 
     def __init__(self, ui):
         super().__init__()
@@ -121,8 +123,6 @@ class View(qtw.QWidget):
         self.testlist_model = tables.TestListTableModel()
         self._ui.table_testlist.setModel(self.testlist_model)
 
-        # Set the "Active" column to a checkbox using a delegate
-
         self._ui.table_testlist.horizontalHeader().setFixedHeight(40)
         self._ui.table_testlist.horizontalHeader().setDefaultAlignment(
             qtc.Qt.AlignCenter | qtc.Qt.Alignment(qtc.Qt.TextWordWrap)  # type: ignore
@@ -177,6 +177,7 @@ class View(qtw.QWidget):
                 time_unit="days",
                 temp_unit="k",
                 stress_unit="mpa",
+                active_state=True,
                 test_data=test_data,
                 local_fits=local_fits,
             )
@@ -205,6 +206,9 @@ class View(qtw.QWidget):
         self.testlist_model.place_test_suite(test_suite)
         self.ts_testlist_sel_model.clearSelection()
 
+        # Clear the single plot on the Test Suite tab
+        self.canvas_ts_singleplot.setup_initial_figure()
+
         # Need to update the global plot on the Test Suite tab
         self.update_ts_multi_plot(test_suite)
 
@@ -219,4 +223,39 @@ class View(qtw.QWidget):
         print("test index: ", test_index)
         self.signal_test_deleted.emit(test_index)
         return
+
+    def ts_move_up(self):
+        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        num_tests = self.testlist_model.num_rows
+
+        print("test index: ", test_index)
+        print("num_tests: ", num_tests)
+
+        if num_tests <= 1:
+            pass
+        elif test_index <= 0:
+            pass
+        else:
+            self.signal_test_move_up.emit(test_index)
+        return
+
+    def ts_move_down(self):
+        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        num_tests = self.testlist_model.num_rows
+
+        print("test index: ", test_index)
+        print("num_tests: ", num_tests)
+
+        if num_tests <= 1:
+            pass
+        elif test_index < 0:
+            pass
+        elif test_index + 1 == num_tests:
+            pass
+        else:
+            print("Selected Row: ", self.ts_testlist_sel_model.currentIndex().row())
+            self.signal_test_move_down.emit(test_index)
+            # Need to make selected row the row that ws just moved down
+            print("Selected Row: ", self.ts_testlist_sel_model.currentIndex().row())
+            return
 

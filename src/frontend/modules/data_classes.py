@@ -42,6 +42,7 @@ class Test:
         time_unit: str,
         temp_unit: str,
         stress_unit: str,
+        active_state: bool,
         test_data: TestData,
         local_fits: LocalFits,
     ):
@@ -65,6 +66,9 @@ class Test:
         # Stores the Currently Displayed Stress Unit
         #   Should be one of the following: "psi", "MPa"
         self.stress_unit = stress_unit
+
+        # Store the active state of the test.
+        self.active_state = active_state
 
         # Stores the laboratory test data in the units [time_unit] and
         #   [stress_unit]
@@ -131,6 +135,7 @@ def empty_test_class():
                 time_unit="seconds",
                 temp_unit="kelvin",
                 stress_unit="mpa",
+                active_state=True,
                 test_data=empty_testdata_class(),
                 local_fits=empty_localfits_class()
             )

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '../../src/frontend/designer/ui_main.ui'
+# Form implementation generated from reading ui file '/home/brady/projects/creeper/make/linux/../../src/frontend/designer/ui_main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -94,12 +94,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_12.addWidget(self.button_delete_test)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_12.addItem(spacerItem)
-        self.pushButton_6 = QtWidgets.QPushButton(self.frame_17)
-        self.pushButton_6.setObjectName("pushButton_6")
-        self.horizontalLayout_12.addWidget(self.pushButton_6)
-        self.pushButton_5 = QtWidgets.QPushButton(self.frame_17)
-        self.pushButton_5.setObjectName("pushButton_5")
-        self.horizontalLayout_12.addWidget(self.pushButton_5)
+        self.button_ts_moveup = QtWidgets.QPushButton(self.frame_17)
+        self.button_ts_moveup.setObjectName("button_ts_moveup")
+        self.horizontalLayout_12.addWidget(self.button_ts_moveup)
+        self.button_ts_movedown = QtWidgets.QPushButton(self.frame_17)
+        self.button_ts_movedown.setObjectName("button_ts_movedown")
+        self.horizontalLayout_12.addWidget(self.button_ts_movedown)
         self.verticalLayout_10.addWidget(self.frame_17)
         self.table_testlist = QtWidgets.QTableView(self.frame_12)
         self.table_testlist.setMinimumSize(QtCore.QSize(0, 200))
@@ -310,7 +310,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.stacked_toplevel)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 20))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -350,8 +350,8 @@ class Ui_MainWindow(object):
         self.button_importtest.setText(_translate("MainWindow", "Import Test"))
         self.button_edit_test.setText(_translate("MainWindow", "Edit Test"))
         self.button_delete_test.setText(_translate("MainWindow", "Delete Test"))
-        self.pushButton_6.setText(_translate("MainWindow", "Move Up"))
-        self.pushButton_5.setText(_translate("MainWindow", "Move Down"))
+        self.button_ts_moveup.setText(_translate("MainWindow", "Move Up"))
+        self.button_ts_movedown.setText(_translate("MainWindow", "Move Down"))
         self.combo_ts_plotpicker.setItemText(0, _translate("MainWindow", "Strain vs. Time"))
         self.combo_ts_plotpicker.setItemText(1, _translate("MainWindow", "Strain Rate vs. Time"))
         self.combo_ts_plotpicker.setItemText(2, _translate("MainWindow", "Applied Deviatoric Stress vs. Time"))

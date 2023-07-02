@@ -75,3 +75,22 @@ class Model(qtc.QObject):
             self.test_suite.delete_test(index)
             self.test_suite_changed.emit(self.test_suite)
         return
+
+    def move_test_down(self, test_index: int):
+
+        # Swap the indexes of of the selected test and the test below it
+        self.test_suite.test_list[test_index], self.test_suite.test_list[test_index+1] = (
+            self.test_suite.test_list[test_index+1], self.test_suite.test_list[test_index]
+        )
+
+        self.test_suite_changed.emit(self.test_suite)
+        return
+
+    def move_test_up(self, test_index: int):
+
+        self.test_suite.test_list[test_index], self.test_suite.test_list[test_index-1] = (
+            self.test_suite.test_list[test_index-1], self.test_suite.test_list[test_index]
+        )
+
+        self.test_suite_changed.emit(self.test_suite)
+        return
