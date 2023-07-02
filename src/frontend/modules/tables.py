@@ -145,7 +145,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
 
     def new_data(self):
         data = []
-        for col in range(len(self._headers)):
+        for _ in range(len(self._headers)):
             data.append([""] * self.num_rows)
 
         self._data = data
@@ -154,20 +154,6 @@ class TestListTableModel(qtc.QAbstractTableModel):
 
     def clear_data(self):
         self.new_data()
-        return
-
-    def place_row(self, test, row):
-
-        self._data[0][row] = test.name
-        self._data[1][row] = test.stress
-        self._data[2][row] = test.color
-        self._data[3][row] = "yes"
-
-        self.dataChanged.emit(
-            qtc.QModelIndex(self.index(0, row)),
-            qtc.QModelIndex(self.index(len(self._headerkeys), row)),
-            [qtc.Qt.DisplayRole]  # type: ignore
-        )
         return
 
     def rowCount(self, parent):
@@ -200,16 +186,44 @@ class TestListTableModel(qtc.QAbstractTableModel):
     def flags(self, index):
         return super().flags(index)
 
-    def add_test(self, test: data_classes.Test):
-        print(test.stress)
-        self.place_row(test, self.cur_test_count)
-        self.cur_test_count += 1
+    def place_test_suite(self, test_suite: data_classes.TestSuite):
+        self.clear_data()
+
+        for row in range(len(test_suite.test_list)):
+            self.setData(
+                qtc.QModelIndex(self.index(row, 0)),
+                test_suite.test_list[row].name,
+                qtc.Qt.EditRole
+            )
+
+            self.setData(
+                qtc.QModelIndex(self.index(row, 1)),
+                test_suite.test_list[row].stress,
+                qtc.Qt.EditRole
+            )
+
+            # TODO: Get color from user rather than hard coding it.
+            self.setData(
+                qtc.QModelIndex(self.index(row, 2)),
+                "blue",
+                qtc.Qt.EditRole
+            )
+
+            # TODO: Get active state from user rather than hard coding it.
+            self.setData(
+                qtc.QModelIndex(self.index(row, 3)),
+                "yes",
+                qtc.Qt.EditRole
+            )
+
+
+        self.dataChanged.emit(
+            qtc.QModelIndex(self.index(0, 0)),
+            qtc.QModelIndex(self.index(len(self._headerkeys), self.num_rows)),
+            [qtc.Qt.DisplayRole]  # type: ignore
+        )
+
         return
 
-    def get_test_name(self, row):
-
-        testname = self._data[0][row]
-
-        return testname
 
 

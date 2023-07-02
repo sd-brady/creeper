@@ -69,10 +69,9 @@ class Model(qtc.QObject):
         
         return True
 
-    def delete_test(self, test_index):
-        self.test_suite.delete_test(test_index)
-
-        # This will be connected later for functionality
-        self.test_suite_changed.emit(self.test_suite)
-
+    @qtc.pyqtSlot(int)
+    def delete_test(self, index):
+        if index+1 <= len(self.test_suite.test_list):
+            self.test_suite.delete_test(index)
+            self.test_suite_changed.emit(self.test_suite)
         return

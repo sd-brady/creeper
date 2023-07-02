@@ -41,7 +41,7 @@ class MainWindow(qtw.QMainWindow):
 
         # Connect test added signals
         self.view.signal_test_added.connect(self.model.add_test)
-        self.model.signal_test_validated.connect(self.view.test_added)
+        # self.model.signal_test_validated.connect(self.view.test_added)
 
         # Connect test added signal
         self.view.signal_test_deleted.connect(self.model.delete_test)
@@ -52,6 +52,8 @@ class MainWindow(qtw.QMainWindow):
         self.model.signal_send_test.connect(self.view.get_test)
 
         self.model.test_suite_changed.connect(self.view.test_suite_changed)
+
+        self.ui.button_delete_test.clicked.connect(self.view.delete_test)
 
         return
 

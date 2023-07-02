@@ -201,6 +201,10 @@ class View(qtw.QWidget):
 
     def test_suite_changed(self, test_suite: data_classes.TestSuite):
 
+        # Update the test list table
+        self.testlist_model.place_test_suite(test_suite)
+        self.ts_testlist_sel_model.clearSelection()
+
         # Need to update the global plot on the Test Suite tab
         self.update_ts_multi_plot(test_suite)
 
@@ -209,3 +213,10 @@ class View(qtw.QWidget):
     def update_ts_multi_plot(self, test_suite):
         self.canvas_ts_multiplot.update_plot(test_suite)
         return
+
+    def delete_test(self):
+        test_index = self.ts_testlist_sel_model.currentIndex().row()
+        print("test index: ", test_index)
+        self.signal_test_deleted.emit(test_index)
+        return
+
