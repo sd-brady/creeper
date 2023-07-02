@@ -67,7 +67,6 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         self.dataChanged.emit(
             self.qindex_topleft, self.qindex_lowerright, [qtc.Qt.DisplayRole]
         )
-        print("I'm confused")
         return
 
     def place_data(self, testdata_dict):

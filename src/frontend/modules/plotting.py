@@ -3,7 +3,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-import matplotlib
+
+from . import data_classes
 
 
 class MyMplCanvas(FigureCanvas):
@@ -48,48 +49,45 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax = self.fig.add_subplot(111)
         return
 
-    def update_plot_strain(self, testdict):
+    def update_plot_strain(self, test: data_classes.Test):
         self.clear_plot()
-        self.ax.set_title(f"Strain vs. Time for Test: {testdict['name']}")
+        self.ax.set_title(f"Strain vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Strain (-)")
-        self.ax.plot(testdict["time"], testdict["strain"])
+        self.ax.plot(test.test_data.time, test.test_data.strain, color=test.color, label=test.name)
         self.draw()
         return
 
-    def update_plot_strainrate(self, testdict):
+    def update_plot_strainrate(self, test: data_classes.Test):
         self.clear_plot()
-        self.ax.set_title(f"Strain Rate vs. Time for Test: {testdict['name']}")
+        self.ax.set_title(f"Strain Rate vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Strain Rate (-/day)")
-        self.ax.plot(testdict["time"][1::], testdict["strain_rate"])
+        self.ax.set_ylabel("Strain (-/day)")
+        self.ax.plot(test.test_data.time[1::], test.test_data.strainrate, color=test.color, label=test.name)
         self.draw()
         return
 
-    def update_plot_stress(self, testdict):
+    def update_plot_stress(self, test: data_classes.Test):
         self.clear_plot()
-        self.ax.set_title(
-            f"Applied Deviatoric Stress vs. Time for Test: {testdict['name']}"
-        )
+        self.ax.set_title(f"Applied Deviatoric Stress vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Applied Deviatoric Stress (MPa)")
-        self.ax.plot(testdict["time"], testdict["stress"])
+        self.ax.plot(test.test_data.time, test.test_data.stress, color=test.color, label=test.name)
         self.draw()
         return
 
-    def update_plot_temp(self, testdict):
+    def update_plot_temp(self, test: data_classes.Test):
         self.clear_plot()
-        self.ax.set_title(f"Applied Temperature vs. Time for Test: {testdict['name']}")
+        self.ax.set_title(f"Applied Temperature vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Applied Temperature (K)")
-        self.ax.plot(testdict["time"], testdict["temperature"])
+        self.ax.set_ylabel("Temperature (K)")
+        self.ax.plot(test.test_data.time, test.test_data.temperature, color=test.color, label=test.name)
         self.draw()
         return
-
 
 class MultiPlot_Strain_Canvas(MyMplCanvas):
     def __init__(self, *args, **kwargs):
@@ -114,9 +112,9 @@ class MultiPlot_Strain_Canvas(MyMplCanvas):
         self.ax.cla()
         return
 
-    def update_plot(self, testlist: list[dict]):
+    def update_plot(self, test_suite: data_classes.TestSuite):
         self.clear_plot()
-        if len(testlist) == 0:
+        if test_suite.num_tests == 0:
             self.setup_initial_figure()
         else:
             self.ax.set_title(f"Strain vs. Time for All Tests")
@@ -124,9 +122,12 @@ class MultiPlot_Strain_Canvas(MyMplCanvas):
             self.ax.set_xlabel("Time (Days)")
             self.ax.set_ylabel("Strain (-)")
 
-            for i in range(len(testlist)):
+            for i in range(test_suite.num_tests):
                 self.ax.plot(
-                    testlist[i]["time"], testlist[i]["strain"], label=testlist[i]["name"]
+                    test_suite.test_list[i].test_data.time,
+                    test_suite.test_list[i].test_data.strain,
+                    color=test_suite.test_list[i].color,
+                    label=test_suite.test_list[i].name,
                 )
 
             self.ax.legend()

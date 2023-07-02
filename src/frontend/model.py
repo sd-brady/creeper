@@ -5,6 +5,8 @@ from .modules import data_classes
 
 class Model(qtc.QObject):
 
+    test_suite_changed = qtc.pyqtSignal(data_classes.TestSuite)
+
     signal_test_validated = qtc.pyqtSignal(data_classes.Test)
     signal_error = qtc.pyqtSignal(str)
     signal_send_test = qtc.pyqtSignal(data_classes.Test)
@@ -24,6 +26,9 @@ class Model(qtc.QObject):
         else:
             self.signal_error.emit("Invalid Test Data. Please check your input and try again.")
             pass
+
+        # This will be connected later for functionality
+        self.test_suite_changed.emit(self.test_suite)
 
         return
 
@@ -66,4 +71,8 @@ class Model(qtc.QObject):
 
     def delete_test(self, test_index):
         self.test_suite.delete_test(test_index)
+
+        # This will be connected later for functionality
+        self.test_suite_changed.emit(self.test_suite)
+
         return

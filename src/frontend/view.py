@@ -14,7 +14,7 @@ class View(qtw.QWidget):
     signal_errorbox = qtc.pyqtSignal(str)
     signal_test_added = qtc.pyqtSignal(data_classes.Test)
     signal_test_deleted = qtc.pyqtSignal(int)
-    segnal_request_test = qtc.pyqtSignal(data_classes.Test)
+    signal_request_test = qtc.pyqtSignal(data_classes.Test)
 
     def __init__(self, ui):
         super().__init__()
@@ -96,8 +96,24 @@ class View(qtw.QWidget):
     def get_test(self, test):
         if test.name == "":
             self.testdata_model.clear_data()
+            self.canvas_ts_singleplot.setup_initial_figure()
         else:
             self.testdata_model.place_test(test)
+            self.update_ts_single_plot(test)
+        return
+
+    def update_ts_single_plot(self, test: data_classes.Test):
+        plotvar = self._ui.combo_ts_plotpicker.currentIndex()
+
+        if plotvar == 0:
+            self.canvas_ts_singleplot.update_plot_strain(test)
+        elif plotvar == 1:
+            self.canvas_ts_singleplot.update_plot_strainrate(test)
+        elif plotvar == 2:
+            self.canvas_ts_singleplot.update_plot_stress(test)
+        elif plotvar == 3:
+            self.canvas_ts_singleplot.update_plot_temp(test)
+
         return
 
     def config_testlist_table(self):
@@ -161,8 +177,8 @@ class View(qtw.QWidget):
                 time_unit="days",
                 temp_unit="k",
                 stress_unit="mpa",
-                TestData=test_data,
-                LocalFits=local_fits,
+                test_data=test_data,
+                local_fits=local_fits,
             )
             self.signal_test_added.emit(test)
 
@@ -181,4 +197,15 @@ class View(qtw.QWidget):
     def test_added(self, test: data_classes.Test):
         # Add Test to the test list table
         num_tests = self.testlist_model.add_test(test)
+        return
+
+    def test_suite_changed(self, test_suite: data_classes.TestSuite):
+
+        # Need to update the global plot on the Test Suite tab
+        self.update_ts_multi_plot(test_suite)
+
+        return
+
+    def update_ts_multi_plot(self, test_suite):
+        self.canvas_ts_multiplot.update_plot(test_suite)
         return

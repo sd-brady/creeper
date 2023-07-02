@@ -1,3 +1,4 @@
+
 class TestData:
     def __init__(
         self,
@@ -16,11 +17,10 @@ class TestData:
         return
 
     def get_strainrate(self):
-        sr_time_list = []
-        strain_rate_list = []
+        self.strainrate = []
 
         for i in range(1, len(self.time)):
-            strain_rate_list.append(
+            self.strainrate.append(
                 (self.strain[i] - self.strain[i - 1])
                 / (self.time[i] - self.time[i - 1])
             )
@@ -42,8 +42,8 @@ class Test:
         time_unit: str,
         temp_unit: str,
         stress_unit: str,
-        TestData: TestData,
-        LocalFits: LocalFits,
+        test_data: TestData,
+        local_fits: LocalFits,
     ):
         # Stores the Name of the Test
         self.name = name
@@ -68,10 +68,10 @@ class Test:
 
         # Stores the laboratory test data in the units [time_unit] and
         #   [stress_unit]
-        self.test_data = TestData
+        self.test_data = test_data
 
         # Stores the local creep fits for the individual creep test
-        self.LocalFits = LocalFits
+        self.local_fits = local_fits
 
         return
 
@@ -131,7 +131,7 @@ def empty_test_class():
                 time_unit="seconds",
                 temp_unit="kelvin",
                 stress_unit="mpa",
-                TestData=empty_testdata_class(),
-                LocalFits=empty_localfits_class()
+                test_data=empty_testdata_class(),
+                local_fits=empty_localfits_class()
             )
     return empty_test

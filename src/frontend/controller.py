@@ -51,6 +51,8 @@ class MainWindow(qtw.QMainWindow):
                 )
         self.model.signal_send_test.connect(self.view.get_test)
 
+        self.model.test_suite_changed.connect(self.view.test_suite_changed)
+
         return
 
 
