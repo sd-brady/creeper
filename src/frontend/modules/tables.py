@@ -258,9 +258,40 @@ class InputDialog(qtw.QDialog):
         layout = qtw.QFormLayout(self)
         
         self.inputs = []
+
+        # QLineEdit for Test Name
+        self.inputs.append(qtw.QLineEdit(self, text=values[0]))
+
+        # QLineEdit for Applied Deviatoric Stress
+        self.inputs.append(qtw.QLineEdit(self, text=values[1]))
+
+        # QComboBox for plot color
+        combo_color = qtw.QComboBox(self)
+        colors = [
+            "tab:blue",
+            "tab:orange",
+            "tab:green",
+            "tab:red",
+            "tab:purple",
+            "tab:brown",
+            "tab:pink",
+            "tab:gray",
+            "tab:olive",
+            "tab:cyan",
+        ]
+        combo_color.addItems(colors)
+        combo_color.setCurrentText(values[2])
+        self.inputs.append(combo_color)
+
+        # QComboBox for active_state
+        combo_active = qtw.QComboBox(self)
+        states = ["True", "False"]
+        combo_active.addItems(states)
+        combo_color.setCurrentText(values[3])
+        self.inputs.append(combo_active)
+
         for i, lab in enumerate(labels):
-            self.inputs.append(qtw.QLineEdit(self, text=values[i]))
-            layout.addRow(lab, self.inputs[-1])
+            layout.addRow(lab, self.inputs[i])
 
         layout.addWidget(buttonBox)
         
@@ -268,5 +299,11 @@ class InputDialog(qtw.QDialog):
         buttonBox.rejected.connect(self.reject)
     
     def getInputs(self):
-        return tuple(input.text() for input in self.inputs)
+
+        name = self.inputs[0].text()
+        stress = self.inputs[1].text()
+        color = self.inputs[2].currentText()
+        active = self.inputs[3].currentText()
+
+        return (name, stress, color, active)
 
