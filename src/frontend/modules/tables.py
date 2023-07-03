@@ -223,11 +223,22 @@ class TestListTableModel(qtc.QAbstractTableModel):
                 qtc.Qt.EditRole
             )
 
-        print(self._data)
-
         self.refresh()
 
         return
+    
+    def get_test_info(self, row):
+
+        # if row == -1:
+        #     test_name = ""; stress = ""; color = ""; active = ""
+        #     pass
+        # else:
+        test_name = self._data[0][row]
+        stress = self._data[1][row]
+        color = self._data[2][row]
+        active = self._data[3][row]
+
+        return (test_name, stress, color, active)
 
     def refresh(self):
         self.dataChanged.emit(
@@ -235,44 +246,6 @@ class TestListTableModel(qtc.QAbstractTableModel):
             qtc.QModelIndex(self.index(self.rowCount(None)-1, self.columnCount(None)-1)),
         )
         self.layoutChanged.emit()
-        return
-
-
-class TestListComboDelegate(qtw.QStyledItemDelegate):
-    items = [
-        "Blue",
-        "Orange",
-        "Green",
-        "Red",
-        "Purple",
-        "Brown",
-        "Pink",
-        "Grey",
-        "Olive",
-        "Cyan",
-    ]
-
-    def __init__(self, parent=None):
-        super(TestListComboDelegate, self).__init__(parent)
-        print(self.items[1])
-        return
-
-    def createEditor(self, parent, option, index):
-        self.editor = qtw.QComboBox(parent)
-        self.editor.addItems(self.items)
-        return self.editor
-
-    def setEditorData(self, editor, index):
-        value = index.data(qtc.Qt.DisplayRole)
-        num = self.items.index(value)
-        editor.setCurrentIndex(num)
-        return
-
-    def setModelData(self, editor, model, index):
-        value = editor.currentText()
-        model.setData(
-            index, qtc.QVariant(value), qtc.Qt.DisplayRole
-        )
         return
 
 class InputDialog(qtw.QDialog):
@@ -288,7 +261,7 @@ class InputDialog(qtw.QDialog):
         for i, lab in enumerate(labels):
             self.inputs.append(qtw.QLineEdit(self, text=values[i]))
             layout.addRow(lab, self.inputs[-1])
-        
+
         layout.addWidget(buttonBox)
         
         buttonBox.accepted.connect(self.accept)

@@ -46,9 +46,6 @@ class MainWindow(qtw.QMainWindow):
         # Connect test added signal
         self.view.signal_test_deleted.connect(self.model.delete_test)
 
-        self.view.selmodel_testlist.currentRowChanged.connect(
-                self.model.send_test
-                )
         self.model.signal_send_test.connect(self.view.get_test)
 
         self.model.test_suite_changed.connect(self.view.test_suite_changed)
@@ -61,7 +58,12 @@ class MainWindow(qtw.QMainWindow):
         self.ui.button_ts_movedown.clicked.connect(self.view.ts_move_down)
         self.ui.button_edit_test.clicked.connect(self.view.edit_test)
 
-        # self.view.signal_edit_test.connect(self.model.edit_test)
+        self.view.signal_edit_test.connect(self.model.edit_test)
+
+        self.view.selmodel_testlist.selectionChanged.connect(self.model.send_test)
+        # self.view.selmodel_testlist.currentRowChanged.connect(
+        #         self.model.send_test
+        #         )
 
         return
 

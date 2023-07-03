@@ -18,7 +18,12 @@ class Model(qtc.QObject):
 
     def add_test(self, test: data_classes.Test):
 
-        valid = self.validate_test(test)
+        valid = self.validate_new_test(
+            test.name,
+            test.stress,
+            test.color,
+            test.active_state,
+        )
 
         if valid:
             self.test_suite.add_test(test)
@@ -32,42 +37,22 @@ class Model(qtc.QObject):
 
         return
 
-    def send_test(self, selected, deselected):
-        print(selected.row())
-        print(self.test_suite.num_tests)
-        if selected.row()+1 > self.test_suite.num_tests:
-            self.signal_send_test.emit(data_classes.empty_test_class())
+    def send_test(self, selected: qtc.QItemSelection, deselected: qtc.QItemSelection):
+
+        if len(selected.indexes()) == 0:
+            print("Nothing Selected.")
+            pass
         else:
-            self.signal_send_test.emit(self.test_suite.test_list[selected.row()])
+            print("Row", selected.indexes()[0].row())
+            row = selected.indexes()[0].row()
+
+            print(self.test_suite.num_tests)
+            if row+1 > self.test_suite.num_tests:
+                self.signal_send_test.emit(data_classes.empty_test_class())
+            else:
+                self.signal_send_test.emit(self.test_suite.test_list[row])
+
         return
-
-    def validate_test(self, test: data_classes.Test):
-
-        # Validate test name
-        #   TODO: probably should add more validation here
-        if test.name == '':
-            return False
-        elif test.name in self.test_suite.get_test_names():
-            return False
-        else:
-            pass
-
-        # Validate time_unit
-        if test.time_unit in ["seconds", "days", "years"]:
-            pass
-        else:
-            return False
-
-        # Validate stress unit
-        if test.stress_unit in ["psi", "mpa"]:
-            pass
-        else:
-            return False
-
-        # TODO: Validate TestData class (time, strain, stress, and temperature lists)
-        # TODO: Validate LocalFits
-        
-        return True
 
     @qtc.pyqtSlot(int)
     def delete_test(self, index):
@@ -94,3 +79,111 @@ class Model(qtc.QObject):
 
         self.test_suite_changed.emit(self.test_suite)
         return
+
+    def edit_test(
+        self,
+        test_index: int,
+        name: str,
+        stress: float,
+        color: str,
+        active: str,
+        ):
+
+        valid = self.validate_edit_test(test_index, name, stress, color, active)
+
+        if valid:
+            self.test_suite.test_list[test_index].name = name
+            self.test_suite.test_list[test_index].stress = stress
+            self.test_suite.test_list[test_index].color = color
+            self.test_suite.test_list[test_index].active_state = active
+            self.test_suite_changed.emit(self.test_suite)
+        else:
+            self.signal_error.emit("Invalid Test Data. Please check your input and try again.")
+            pass
+
+        return
+
+    def validate_new_test(self, new_name, new_stress, new_color, new_active):
+
+        valid_list = []
+        
+        valid_list.append(self.validate_new_test_name(new_name))
+        valid_list.append(self.validate_new_test_stress(new_stress))
+        valid_list.append(self.validate_new_test_color(new_color))
+        valid_list.append(self.validate_new_test_active(new_active))
+
+        print(valid_list)
+
+        if False in valid_list:
+            return False
+        else:
+            return True
+
+    def validate_edit_test(self, test_index, new_name, new_stress, new_color, new_active):
+
+        valid_list = []
+        
+        valid_list.append(self.validate_edit_test_name(test_index, new_name))
+        valid_list.append(self.validate_new_test_stress(new_stress))
+        valid_list.append(self.validate_new_test_color(new_color))
+        valid_list.append(self.validate_new_test_active(new_active))
+
+        print(valid_list)
+
+        if False in valid_list:
+            return False
+        else:
+            return True
+
+    def validate_new_test_name(self, new_name):
+        # Need to make sure the name is not already in the test suite
+        if new_name in self.test_suite.get_test_names():
+            return False
+        elif new_name == '':
+            return False
+        else:
+            return True
+
+    def validate_edit_test_name(self, test_index, new_name):
+        # Need to make sure the name is not already in the test suite
+        #   (other than the test being edited)
+        if (new_name in self.test_suite.get_test_names() and
+                new_name != self.test_suite.test_list[test_index].name):
+            return False
+        elif new_name == '':
+            return False
+        else:
+            return True
+    
+    def validate_new_test_stress(self, new_stress):
+        # Make sure it isn't an empty string
+        if new_stress == '':
+            return False
+        # Make sure it is a float
+        try:
+            float(new_stress)
+        except ValueError:
+            return False
+
+        # Make sure it is greater or equal to zero
+        if float(new_stress) < 0:
+            return False
+
+        return True
+
+    def validate_new_test_color(self, color):
+
+        # Make sure it isn't an empty string
+        if color == '':
+            return False
+
+        return True
+
+    def validate_new_test_active(self, active):
+
+        # Make sure the string is a boolean value
+        if active in ["True", "False", "true", "false", "1", "0"]:
+            return True
+        else:
+            return False
+

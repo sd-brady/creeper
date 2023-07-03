@@ -21,7 +21,7 @@ class View(qtw.QWidget):
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color, 
     #   Arg5 is the active status
-    signal_edit_test = qtc.pyqtSignal(int, str, str, str, bool)
+    signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
 
     def __init__(self, ui):
         super().__init__()
@@ -275,8 +275,29 @@ class View(qtw.QWidget):
             )
             return
 
+    # # Signals for the Test Suite Tab. Arg1 is the test index to edit
+    # #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color, 
+    # #   Arg5 is the active status
+    # signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
     def edit_test(self):
         test_index = self.selmodel_testlist.currentIndex().row()
-        self.signal_edit_test.emit(test_index)
+
+        if test_index == -1:
+            pass
+        else:
+            cur_test_info = self.testlist_model.get_test_info(test_index)
+
+            dialog = tables.InputDialog(
+                values = [
+                    cur_test_info[0], cur_test_info[1], cur_test_info[2], cur_test_info[3]
+                ]
+            )
+            if dialog.exec():
+                new_inputs = dialog.getInputs()
+
+            self.signal_edit_test.emit(
+                test_index, new_inputs[0], new_inputs[1], new_inputs[2], new_inputs[3]
+            )
+
         return
 
