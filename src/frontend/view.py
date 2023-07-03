@@ -161,9 +161,15 @@ class View(qtw.QWidget):
                 filename, header=0, names=self.testdata_model._headerkeys  # type: ignore
             ).to_dict(orient="list")
 
+            # Get the current units from the gui
+            unit_time, unit_stress, unit_temperature = self.get_units()
+
             # Get the test name from the user
             dialog = tables.InputDialog(
-                values = ["", "", "", ""]
+                values = ["", "", "", ""],
+                unit_time = unit_time,
+                unit_stress = unit_stress,
+                unit_temperature = unit_temperature,
             )
             if dialog.exec():
                 inputs = dialog.getInputs()
@@ -287,10 +293,15 @@ class View(qtw.QWidget):
         else:
             cur_test_info = self.testlist_model.get_test_info(test_index)
 
+            unit_time, unit_stress, unit_temperature = self.get_units()
+
             dialog = tables.InputDialog(
                 values = [
                     cur_test_info[0], cur_test_info[1], cur_test_info[2], cur_test_info[3]
-                ]
+                ],
+                unit_time = unit_time,
+                unit_stress = unit_stress,
+                unit_temperature = unit_temperature,
             )
             if dialog.exec():
                 new_inputs = dialog.getInputs()
@@ -298,6 +309,12 @@ class View(qtw.QWidget):
             self.signal_edit_test.emit(
                 test_index, new_inputs[0], new_inputs[1], new_inputs[2], new_inputs[3]
             )
-
         return
+
+    def get_units(self):
+        unit_time = self._ui.combo_unit_time.currentText()
+        unit_stress = self._ui.combo_unit_stress.currentText()
+        unit_temperature = self._ui.combo_unit_temperature.currentText()
+        print(unit_time, unit_stress, unit_temperature)
+        return (unit_time, unit_stress, unit_temperature)
 

@@ -249,18 +249,57 @@ class TestListTableModel(qtc.QAbstractTableModel):
         return
 
 class InputDialog(qtw.QDialog):
-    def __init__(self,  values:list[str], parent=None):
+    def __init__(
+        self,
+        values:list[str],
+        unit_time: str,
+        unit_stress: str,
+        unit_temperature: str,
+        parent=None
+    ):
+
         super().__init__(parent)
         
-        labels = ["Test Name", "Applied Deviatoric Stress", "Color", "Active Status"]
+        labels = ["Test Name", "Time Unit", "Stress Unit", "Temperature Unit", "Applied Deviatoric Stress", "Color", "Active Status"]
 
         buttonBox = qtw.QDialogButtonBox(qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self)
         layout = qtw.QFormLayout(self)
         
         self.inputs = []
 
+        #---- Rows are as follows
+        # 0) Test Name (QLineEdit)
+        # 1) Time Unit (QCombobox)
+        # 2) Stress Unit (QCombobox)
+        # 3) Temperature Unit (QCombobox)
+        # 4) Applied Deviatoric Stress (QLineEdit)
+        # 5) Color (QCombobox)
+        # 6) Active Status (QCombobox)
+        # 7) ButtonBox
+
         # QLineEdit for Test Name
         self.inputs.append(qtw.QLineEdit(self, text=values[0]))
+
+        # QComboBox for Units of Time
+        combo_time = qtw.QComboBox(self)
+        time_units = ["seconds", "days", "years"]
+        combo_time.addItems(time_units)
+        combo_time.setCurrentText(unit_time)
+        self.inputs.append(combo_time)
+
+        # QComboBox for Units of Stress
+        combo_stress = qtw.QComboBox(self)
+        stress_units = ["MPa", "psi"]
+        combo_stress.addItems(stress_units)
+        combo_stress.setCurrentText(unit_stress)
+        self.inputs.append(combo_stress)
+
+        # QComboBox for Units of Stress
+        combo_temp = qtw.QComboBox(self)
+        temp_units = ["kelvin", "rankine"]
+        combo_temp.addItems(temp_units)
+        combo_temp.setCurrentText(unit_temperature)
+        self.inputs.append(combo_temp)
 
         # QLineEdit for Applied Deviatoric Stress
         self.inputs.append(qtw.QLineEdit(self, text=values[1]))
@@ -301,9 +340,9 @@ class InputDialog(qtw.QDialog):
     def getInputs(self):
 
         name = self.inputs[0].text()
-        stress = self.inputs[1].text()
-        color = self.inputs[2].currentText()
-        active = self.inputs[3].currentText()
+        stress = self.inputs[4].text()
+        color = self.inputs[5].currentText()
+        active = self.inputs[6].currentText()
 
         return (name, stress, color, active)
 
