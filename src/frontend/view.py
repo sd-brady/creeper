@@ -168,27 +168,27 @@ class View(qtw.QWidget):
             if dialog.exec():
                 inputs = dialog.getInputs()
 
-            test_data = data_classes.TestData(
-                time_list=imported_data["time"],
-                strain_list=imported_data["strain"],
-                stress_list=imported_data["stress"],
-                temperature_list=imported_data["temperature"],
-            )
+                test_data = data_classes.TestData(
+                    time_list=imported_data["time"],
+                    strain_list=imported_data["strain"],
+                    stress_list=imported_data["stress"],
+                    temperature_list=imported_data["temperature"],
+                )
 
-            # Initialize Local Fit Class for the Test
-            local_fits = data_classes.LocalFits()
-            test = data_classes.Test(
-                name=inputs[0],
-                stress=inputs[1],
-                color=inputs[2],
-                time_unit="days",
-                temp_unit="k",
-                stress_unit="mpa",
-                active_state=inputs[3],
-                test_data=test_data,
-                local_fits=local_fits,
-            )
-            self.signal_test_added.emit(test)
+                # Initialize Local Fit Class for the Test
+                local_fits = data_classes.LocalFits()
+                test = data_classes.Test(
+                    name=inputs[0],
+                    stress=inputs[1],
+                    color=inputs[2],
+                    time_unit="days",
+                    temp_unit="k",
+                    stress_unit="mpa",
+                    active_state=inputs[3],
+                    test_data=test_data,
+                    local_fits=local_fits,
+                )
+                self.signal_test_added.emit(test)
 
         return
 
