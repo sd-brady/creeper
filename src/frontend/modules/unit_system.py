@@ -1,5 +1,7 @@
 from enum import Enum
 
+# TODO: Add unit tests for the unit conversion functions
+
 
 class UnitTime(Enum):
     """
@@ -53,3 +55,75 @@ class UnitSystem:
         self.temperature = temperature
         self.stress = stress
         return
+
+
+def convert_time_to_seconds(from_value: float, from_unit: UnitTime):
+    if from_unit.name == UnitTime["SECONDS"].name:
+        to_value = from_value
+    elif from_unit.name == UnitTime["DAYS"].name:
+        to_value = from_value * 24.0 * 60.0 * 60.0
+    elif from_unit.name == UnitTime["YEARS"].name:
+        to_value = from_value * 365.0 * 24.0 * 60.0 * 60.0
+    else:
+        raise Exception("Invalid time unit.")
+    return to_value
+
+
+def convert_time_from_seconds(from_value: float, to_unit: UnitTime):
+    if to_unit.name == UnitTime["SECONDS"].name:
+        to_value = from_value
+    elif to_unit.name == UnitTime["DAYS"].name:
+        to_value = from_value / (24.0 * 60.0 * 60.0)
+    elif to_unit.name == UnitTime["YEARS"].name:
+        to_value = from_value / (365.0 * 24.0 * 60.0 * 60.0)
+    else:
+        raise Exception("Invalid time unit.")
+    return to_value
+
+
+def convert_stress_to_mpa(from_value: float, from_unit: UnitStress):
+    if from_unit.name == UnitStress["MPA"].name:
+        to_value = from_value
+    elif from_unit.name == UnitStress["PSI"]:
+        to_value = from_value / 145.0377377
+    else:
+        raise Exception("Invalid stress unit.")
+    return to_value
+
+
+def convert_stress_from_mpa(from_value: float, to_unit: UnitStress):
+    if to_unit.name == UnitStress["MPA"].name:
+        to_value = from_value
+    elif to_unit.name == UnitStress["PSI"].name:
+        to_value = from_value * 145.0377377
+    else:
+        raise Exception("Invalid stress unit.")
+    return to_value
+
+
+def convert_temp_to_kelvin(from_value: float, from_unit: UnitTemp):
+    if from_unit == UnitTemp["KELVIN"].name:
+        to_value = from_value
+    elif from_unit == UnitTemp["CELSIUS"].name:
+        to_value = from_value + 273.15
+    elif from_unit == UnitTemp["FAHRENHEIT"].name:
+        to_value = (from_value - 32) * (5.0 / 9.0) + 273.15
+    elif from_unit == UnitTemp["RANKINE"].name:
+        to_value = from_value * (5.0 / 9.0)
+    else:
+        raise Exception("Invalid temperature unit")
+    return to_value
+
+
+def convert_temp_from_kelvin(from_value: float, to_unit: UnitTemp):
+    if to_unit == UnitTemp["KELVIN"].name:
+        to_value = from_value
+    elif to_unit == UnitTemp["CELSIUS"].name:
+        to_value = from_value - 273.15
+    elif to_unit == UnitTemp["FAHRENHEIT"].name:
+        to_value = (from_value - 273.15) * (9.0 / 5.0) + 32
+    elif to_unit == UnitTemp["RANKINE"].name:
+        to_value = from_value / (5.0 / 9.0)
+    else:
+        raise Exception("Invalid temperature unit")
+    return to_value
