@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qt5agg import (
 from .modules import tables
 from .modules import plotting
 from .modules import data_classes
+from .modules import unit_system
 
 
 class View(qtw.QWidget):

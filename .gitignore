@@ -27,6 +27,10 @@ share/python-wheels/
 MANIFEST
 *log/
 .vscode/
+testdir/
+
+# pyrightconfig (this should be set up per machine)
+pyrightconfig.json
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

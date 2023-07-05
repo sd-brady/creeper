@@ -1,5 +1,9 @@
 # TODO
 
+* Add an enum for plotting colors (e.g., "Blue": "tab:blue", "Red": #102512 )
+    * Make the inputDialog and the plots reference the enum names and values.
+    This will make it easy to edit, add, and remove colors.
+
 * Add Combo Box to Plot Color on the TestInputDialog.
 * Add a Combo box to the "Active Status" on the TestInputDialog
 * Add functionality to edit the test information on the test suite tab.
