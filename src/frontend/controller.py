@@ -41,7 +41,6 @@ class MainWindow(qtw.QMainWindow):
 
         # Connect test added signals
         self.view.signal_test_added.connect(self.model.add_test)
-        # self.model.signal_test_validated.connect(self.view.test_added)
 
         # Connect test added signal
         self.view.signal_test_deleted.connect(self.model.delete_test)
@@ -61,12 +60,8 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_edit_test.connect(self.model.edit_test)
 
         self.view.selmodel_testlist.selectionChanged.connect(self.model.send_test)
-        # self.view.selmodel_testlist.currentRowChanged.connect(
-        #         self.model.send_test
-        #         )
 
         return
-
 
     def messagebox_error(self, message):
         qtw.QMessageBox.critical(self, "Error", message)

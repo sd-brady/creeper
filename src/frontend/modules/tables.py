@@ -4,6 +4,7 @@ from PyQt5 import QtGui as qtg
 
 from . import data_classes
 
+
 class TestDataTableModel(qtc.QAbstractTableModel):
     def __init__(self):
         super().__init__()
@@ -47,11 +48,11 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         self.clear_data()
 
         data_list = [
-                test.test_data.time,
-                test.test_data.temperature,
-                test.test_data.stress,
-                test.test_data.strain
-                ]
+            test.test_data.time,
+            test.test_data.temperature,
+            test.test_data.stress,
+            test.test_data.strain,
+        ]
 
         for col in range(len(self._headerkeys)):
             for row in range(len(test.test_data.time)):
@@ -153,7 +154,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
         self.dataChanged.emit(
             qtc.QModelIndex(self.index(0, 0)),
             qtc.QModelIndex(self.index(len(self._headerkeys), self.num_rows)),
-            [qtc.Qt.DisplayRole]  # type: ignore
+            [qtc.Qt.DisplayRole],  # type: ignore
         )
 
         return
@@ -200,35 +201,34 @@ class TestListTableModel(qtc.QAbstractTableModel):
             self.setData(
                 qtc.QModelIndex(self.index(row, 0)),
                 test_suite.test_list[row].name,
-                qtc.Qt.EditRole
+                qtc.Qt.EditRole,
             )
 
             self.setData(
                 qtc.QModelIndex(self.index(row, 1)),
                 test_suite.test_list[row].stress,
-                qtc.Qt.EditRole
+                qtc.Qt.EditRole,
             )
 
             # TODO: Get color from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 2)),
                 test_suite.test_list[row].color,
-                qtc.Qt.EditRole
+                qtc.Qt.EditRole,
             )
 
             # TODO: Get active state from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 3)),
                 test_suite.test_list[row].active_state,
-                qtc.Qt.EditRole
+                qtc.Qt.EditRole,
             )
 
         self.refresh()
 
         return
-    
-    def get_test_info(self, row):
 
+    def get_test_info(self, row):
         # if row == -1:
         #     test_name = ""; stress = ""; color = ""; active = ""
         #     pass
@@ -243,31 +243,43 @@ class TestListTableModel(qtc.QAbstractTableModel):
     def refresh(self):
         self.dataChanged.emit(
             qtc.QModelIndex(self.index(0, 0)),
-            qtc.QModelIndex(self.index(self.rowCount(None)-1, self.columnCount(None)-1)),
+            qtc.QModelIndex(
+                self.index(self.rowCount(None) - 1, self.columnCount(None) - 1)
+            ),
         )
         self.layoutChanged.emit()
         return
 
+
 class InputDialog(qtw.QDialog):
     def __init__(
         self,
-        values:list[str],
+        values: list[str],
         unit_time: str,
         unit_stress: str,
         unit_temperature: str,
-        parent=None
+        parent=None,
     ):
-
         super().__init__(parent)
-        
-        labels = ["Test Name", "Time Unit", "Stress Unit", "Temperature Unit", "Applied Deviatoric Stress", "Color", "Active Status"]
 
-        buttonBox = qtw.QDialogButtonBox(qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self)
+        labels = [
+            "Test Name",
+            "Time Unit",
+            "Stress Unit",
+            "Temperature Unit",
+            "Applied Deviatoric Stress",
+            "Color",
+            "Active Status",
+        ]
+
+        buttonBox = qtw.QDialogButtonBox(
+            qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
+        )
         layout = qtw.QFormLayout(self)
-        
+
         self.inputs = []
 
-        #---- Rows are as follows
+        # ---- Rows are as follows
         # 0) Test Name (QLineEdit)
         # 1) Time Unit (QCombobox)
         # 2) Stress Unit (QCombobox)
@@ -333,16 +345,14 @@ class InputDialog(qtw.QDialog):
             layout.addRow(lab, self.inputs[i])
 
         layout.addWidget(buttonBox)
-        
+
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-    
-    def getInputs(self):
 
+    def getInputs(self):
         name = self.inputs[0].text()
         stress = self.inputs[4].text()
         color = self.inputs[5].currentText()
         active = self.inputs[6].currentText()
 
         return (name, stress, color, active)
-

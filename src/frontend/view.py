@@ -19,7 +19,7 @@ class View(qtw.QWidget):
     signal_test_move_down = qtc.pyqtSignal(int)
 
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
-    #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color, 
+    #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
     #   Arg5 is the active status
     signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
 
@@ -39,11 +39,15 @@ class View(qtw.QWidget):
 
         return
 
-    def initialize_variables(self,):
+    def initialize_variables(
+        self,
+    ):
         self.ts_current_test = data_classes.empty_test_class()
         return
 
-    def config_slots_and_signals(self,):
+    def config_slots_and_signals(
+        self,
+    ):
         # Connect the signal for selected row in the Test Suite testlist table
         return
 
@@ -99,7 +103,7 @@ class View(qtw.QWidget):
     def ts_testlist_row_changed(self, selected, deselected):
         self.signal_test_requested(selected.row())
         return
-    
+
     def get_test(self, test):
         if test.name == "":
             self.testdata_model.clear_data()
@@ -166,10 +170,10 @@ class View(qtw.QWidget):
 
             # Get the test name from the user
             dialog = tables.InputDialog(
-                values = ["", "", "", ""],
-                unit_time = unit_time,
-                unit_stress = unit_stress,
-                unit_temperature = unit_temperature,
+                values=["", "", "", ""],
+                unit_time=unit_time,
+                unit_stress=unit_stress,
+                unit_temperature=unit_temperature,
             )
             if dialog.exec():
                 inputs = dialog.getInputs()
@@ -214,7 +218,6 @@ class View(qtw.QWidget):
         return
 
     def test_suite_changed(self, test_suite: data_classes.TestSuite):
-
         # Update the test list table
         self.testlist_model.place_test_suite(test_suite)
         self.selmodel_testlist.clearSelection()
@@ -282,7 +285,7 @@ class View(qtw.QWidget):
             return
 
     # # Signals for the Test Suite Tab. Arg1 is the test index to edit
-    # #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color, 
+    # #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
     # #   Arg5 is the active status
     # signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
     def edit_test(self):
@@ -296,12 +299,15 @@ class View(qtw.QWidget):
             unit_time, unit_stress, unit_temperature = self.get_units()
 
             dialog = tables.InputDialog(
-                values = [
-                    cur_test_info[0], cur_test_info[1], cur_test_info[2], cur_test_info[3]
+                values=[
+                    cur_test_info[0],
+                    cur_test_info[1],
+                    cur_test_info[2],
+                    cur_test_info[3],
                 ],
-                unit_time = unit_time,
-                unit_stress = unit_stress,
-                unit_temperature = unit_temperature,
+                unit_time=unit_time,
+                unit_stress=unit_stress,
+                unit_temperature=unit_temperature,
             )
             if dialog.exec():
                 new_inputs = dialog.getInputs()
@@ -317,4 +323,3 @@ class View(qtw.QWidget):
         unit_temperature = self._ui.combo_unit_temperature.currentText()
         print(unit_time, unit_stress, unit_temperature)
         return (unit_time, unit_stress, unit_temperature)
-
