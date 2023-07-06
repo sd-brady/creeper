@@ -1,5 +1,25 @@
+from enum import Enum
+
+
 from .unit_system import UnitSystem
-from .plotting import PlotColors, ActiveState
+
+
+class ActiveState(Enum):
+    ON = "On"
+    OFF = "Off"
+
+
+class PlotColors(Enum):
+    BLUE = "tab:blue"
+    ORANGE = "tab:orange"
+    GREEN = "tab:green"
+    RED = "tab:red"
+    PURPLE = "tab:purple"
+    BROWN = "tab:brown"
+    PINK = "tab:pink"
+    GRAY = "tab:gray"
+    OLIVE = "tab:olive"
+    CYAN = "tab:cyan"
 
 
 class TestData:

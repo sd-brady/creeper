@@ -1,5 +1,9 @@
 # TODO
 
+* Initialize the unit combo box options in code vs in designer. This will allow
+    more flexibility if we want to add different units later. Also reduces chance
+    for bugs when passing unit systems around.
+
 * Add an enum for plotting colors (e.g., "Blue": "tab:blue", "Red": #102512 )
     * Make the inputDialog and the plots reference the enum names and values.
     This will make it easy to edit, add, and remove colors.

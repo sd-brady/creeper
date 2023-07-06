@@ -16,24 +16,16 @@ class Model(qtc.QObject):
         return
 
     def add_test(self, test: data_classes.Test):
-        valid = self.validate_new_test(
-            test.name,
-            test.stress,
-            test.color,
-            test.active_state,
-        )
+        valid = self.validate_new_test(test.name, test.stress)
 
         if valid:
             self.test_suite.add_test(test)
-            self.signal_test_validated.emit(test)
+            self.test_suite_changed.emit(self.test_suite)
         else:
             self.signal_error.emit(
                 "Invalid Test Data. Please check your input and try again."
             )
             pass
-
-        # This will be connected later for functionality
-        self.test_suite_changed.emit(self.test_suite)
 
         return
 
@@ -109,15 +101,11 @@ class Model(qtc.QObject):
 
         return
 
-    def validate_new_test(self, new_name, new_stress, new_color, new_active):
+    def validate_new_test(self, new_name, new_stress):
         valid_list = []
 
         valid_list.append(self.validate_new_test_name(new_name))
         valid_list.append(self.validate_new_test_stress(new_stress))
-        valid_list.append(self.validate_new_test_color(new_color))
-        valid_list.append(self.validate_new_test_active(new_active))
-
-        print(valid_list)
 
         if False in valid_list:
             return False
@@ -131,10 +119,6 @@ class Model(qtc.QObject):
 
         valid_list.append(self.validate_edit_test_name(test_index, new_name))
         valid_list.append(self.validate_new_test_stress(new_stress))
-        valid_list.append(self.validate_new_test_color(new_color))
-        valid_list.append(self.validate_new_test_active(new_active))
-
-        print(valid_list)
 
         if False in valid_list:
             return False
@@ -178,17 +162,3 @@ class Model(qtc.QObject):
             return False
 
         return True
-
-    def validate_new_test_color(self, color):
-        # Make sure it isn't an empty string
-        if color == "":
-            return False
-
-        return True
-
-    def validate_new_test_active(self, active):
-        # Make sure the string is a boolean value
-        if active in ["True", "False", "true", "false", "1", "0"]:
-            return True
-        else:
-            return False

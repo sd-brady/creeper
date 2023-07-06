@@ -43,7 +43,7 @@ class View(qtw.QWidget):
     def initialize_variables(
         self,
     ):
-        self.ts_current_test = data_classes.empty_test_class()
+        # self.ts_current_test = data_classes.empty_test_class()
         return
 
     def config_slots_and_signals(
@@ -193,7 +193,7 @@ class View(qtw.QWidget):
                     local_fits=local_fits,
                     unit_system=test_unit_system,
                 )
-                # self.signal_test_added.emit(test)
+                self.signal_test_added.emit(test)
 
         return
 
@@ -208,7 +208,6 @@ class View(qtw.QWidget):
         return filename
 
     def test_added(self, test: data_classes.Test):
-        # Add Test to the test list table
         self.testlist_model.add_test(test)
         return
 
@@ -282,7 +281,11 @@ class View(qtw.QWidget):
     # # Signals for the Test Suite Tab. Arg1 is the test index to edit
     # #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
     # #   Arg5 is the active status
-    # signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
+
+    # signal_edit_test = qtc.pyqtSignal(
+    #   index:int, name:str, stress:str, color:PlotColors, active:ActiveState
+    # )
+
     def edit_test(self):
         test_index = self.selmodel_testlist.currentIndex().row()
 
@@ -291,14 +294,17 @@ class View(qtw.QWidget):
         else:
             cur_test_info = self.testlist_model.get_test_info(test_index)
 
-            unit_time, unit_stress, unit_temperature = self.get_units()
+            unit_system = self.get_units()
 
-            dialog = tables.AddTestDialog()
+            dialog = tables.EditTestDialog()
             if dialog.exec():
-                new_inputs = dialog.getInputs()
+                new_name = dialog.get_name()
+                new_stress = dialog.get_stress()
+                new_color = dialog.get_color()
+                new_active = dialog.get_active_state()
 
             self.signal_edit_test.emit(
-                test_index, new_inputs[0], new_inputs[1], new_inputs[2], new_inputs[3]
+                test_index, new_name, new_stress, new_color, new_active
             )
         return
 

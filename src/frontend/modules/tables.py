@@ -2,7 +2,6 @@ from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from . import plotting
 from . import unit_system
 from . import data_classes
 
@@ -215,14 +214,14 @@ class TestListTableModel(qtc.QAbstractTableModel):
             # TODO: Get color from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 2)),
-                test_suite.test_list[row].color,
+                test_suite.test_list[row].color.value,
                 qtc.Qt.EditRole,
             )
 
             # TODO: Get active state from user rather than hard coding it.
             self.setData(
                 qtc.QModelIndex(self.index(row, 3)),
-                test_suite.test_list[row].active_state,
+                test_suite.test_list[row].active_state.value,
                 qtc.Qt.EditRole,
             )
 
@@ -305,23 +304,22 @@ class AddTestDialog(qtw.QDialog):
 
         # QComboBox for plot color
         self.combo_color = qtw.QComboBox(self)
-        colors = [member.value for member in plotting.PlotColors]
+        colors = [member.value for member in data_classes.PlotColors]
         self.combo_color.addItems(colors)
-        self.combo_color.setCurrentText(plotting.PlotColor["BLUE"].value)
+        self.combo_color.setCurrentText(data_classes.PlotColors["BLUE"].value)
         layout.addRow("Plot Color", self.combo_color)
 
         # QComboBox for active_state
         self.combo_active = qtw.QComboBox(self)
-        states = [member.value for member in plotting.ActiveState]
+        states = [member.value for member in data_classes.ActiveState]
         self.combo_active.addItems(states)
-        self.combo_active.setCurrentText(plotting.ActiveState["ON"].value)
-        layout.addRow("Active Status")
-
-        layout.addWidget(buttonBox)
+        self.combo_active.setCurrentText(data_classes.ActiveState["ON"].value)
+        layout.addRow("Active Status", self.combo_active)
 
         buttonBox = qtw.QDialogButtonBox(
             qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
         )
+        layout.addWidget(buttonBox)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
@@ -333,14 +331,81 @@ class AddTestDialog(qtw.QDialog):
     def get_stress(self) -> str:
         return self.lineedit_appstress.text()
 
-    def get_color(self) -> plotting.PlotColors:
-        return plotting.PlotColor(self.combo_color.currentText())
+    def get_color(self) -> data_classes.PlotColors:
+        return data_classes.PlotColors(self.combo_color.currentText())
 
-    def get_active_state(self) -> plotting.ActiveState:
-        return plotting.ActiveState(self.combo_active.currentText())
+    def get_active_state(self) -> data_classes.ActiveState:
+        return data_classes.ActiveState(self.combo_active.currentText())
 
     def get_unit_system(self) -> unit_system.UnitSystem:
         unit_time = unit_system.UnitTime(self.combo_time.currentText())
         unit_stress = unit_system.UnitStress(self.combo_stress.currentText())
         unit_temp = unit_system.UnitTemp(self.combo_temp.currentText())
         return unit_system.UnitSystem(unit_time, unit_temp, unit_stress)
+
+
+class EditTestDialog(qtw.QDialog):
+    def __init__(
+        self,
+        name: str,
+        stress: str,
+        color: data_classes.PlotColors,
+        active: data_classes.ActiveState,
+        parent=None,
+    ):
+        super().__init__(parent)
+
+        layout = qtw.QFormLayout(self)
+
+        # ---- Rows are as follows
+        # 0) Test Name (QLineEdit)
+        # 1) Time Unit (QCombobox)
+        # 2) Stress Unit (QCombobox)
+        # 3) Temperature Unit (QCombobox)
+        # 4) Applied Deviatoric Stress (QLineEdit)
+        # 5) Color (QCombobox)
+        # 6) Active Status (QCombobox)
+        # 7) ButtonBox
+
+        # QLineEdit for Test Name
+        self.lineedit_testname = qtw.QLineEdit(self, text=name)
+        layout.addRow("Test Name", self.lineedit_testname)
+
+        # QLineEdit for Applied Deviatoric Stress
+        self.lineedit_appstress = qtw.QLineEdit(self, text=stress)
+        layout.addRow("Applied Deviatoric Stress", self.lineedit_appstress)
+
+        # QComboBox for plot color
+        self.combo_color = qtw.QComboBox(self)
+        colors = [member.value for member in data_classes.PlotColors]
+        self.combo_color.addItems(colors)
+        self.combo_color.setCurrentText(color.value)
+        layout.addRow("Plot Color", self.combo_color)
+
+        # QComboBox for active_state
+        self.combo_active = qtw.QComboBox(self)
+        states = [member.value for member in data_classes.ActiveState]
+        self.combo_active.addItems(states)
+        self.combo_active.setCurrentText(active.value)
+        layout.addRow("Active Status", self.combo_active)
+
+        buttonBox = qtw.QDialogButtonBox(
+            qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
+        )
+        layout.addWidget(buttonBox)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        return
+
+    def get_name(self) -> str:
+        return self.lineedit_testname.text()
+
+    def get_stress(self) -> str:
+        return self.lineedit_appstress.text()
+
+    def get_color(self) -> data_classes.PlotColors:
+        return data_classes.PlotColors(self.combo_color.currentText())
+
+    def get_active_state(self) -> data_classes.ActiveState:
+        return data_classes.ActiveState(self.combo_active.currentText())

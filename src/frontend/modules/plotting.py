@@ -1,4 +1,3 @@
-from enum import Enum
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
@@ -6,24 +5,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
 from . import data_classes
-
-
-class ActiveState(Enum):
-    ON = "On"
-    OFF = "Off"
-
-
-class PlotColors(Enum):
-    BLUE = "tab:blue"
-    ORANGE = "tab:orange"
-    GREEN = "tab:green"
-    RED = "tab:red"
-    PURPLE = "tab:purple"
-    BROWN = "tab:brown"
-    PINK = "tab:pink"
-    GRAY = "tab:gray"
-    OLIVE = "tab:olive"
-    CYAN = "tab:cyan"
 
 
 class MyMplCanvas(FigureCanvas):
@@ -77,7 +58,7 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.plot(
             test.test_data.time,
             test.test_data.strain,
-            color=test.color,
+            color=test.color.value,
             label=test.name,
         )
         self.draw()
@@ -92,7 +73,7 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.plot(
             test.test_data.time[1::],
             test.test_data.strainrate,
-            color=test.color,
+            color=test.color.value,
             label=test.name,
         )
         self.draw()
@@ -166,7 +147,7 @@ class MultiPlot_Strain_Canvas(MyMplCanvas):
                 self.ax.plot(
                     test_suite.test_list[i].test_data.time,
                     test_suite.test_list[i].test_data.strain,
-                    color=test_suite.test_list[i].color,
+                    color=test_suite.test_list[i].color.value,
                     label=test_suite.test_list[i].name,
                 )
 
