@@ -163,21 +163,17 @@ class View(qtw.QWidget):
             # with the keys being the column headers from the table model.
             # testdata_dict = pd.read_csv(filename, ).to_dict(orient="list")
             imported_data = pd.read_csv(
-                filename, header=0, names=self.testdata_model._headerkeys  # type: ignore
+                filename, header=0, names=self.testdata_model._headerkeys
             ).to_dict(orient="list")
 
-            # Get the current units from the gui
-            unit_time, unit_stress, unit_temperature = self.get_units()
-
             # Get the test name from the user
-            dialog = tables.InputDialog(
-                values=["", "", "", ""],
-                unit_time=unit_time,
-                unit_stress=unit_stress,
-                unit_temperature=unit_temperature,
-            )
+            dialog = tables.AddTestDialog()
             if dialog.exec():
-                inputs = dialog.getInputs()
+                test_name = dialog.get_name()
+                app_stress = dialog.get_stress()
+                plot_color = dialog.get_color()
+                active_state = dialog.get_active_state()
+                test_unit_system = dialog.get_unit_system()
 
                 test_data = data_classes.TestData(
                     time_list=imported_data["time"],
@@ -189,17 +185,15 @@ class View(qtw.QWidget):
                 # Initialize Local Fit Class for the Test
                 local_fits = data_classes.LocalFits()
                 test = data_classes.Test(
-                    name=inputs[0],
-                    stress=inputs[1],
-                    color=inputs[2],
-                    time_unit="days",
-                    temp_unit="k",
-                    stress_unit="mpa",
-                    active_state=inputs[3],
+                    name=test_name,
+                    stress=app_stress,
+                    color=plot_color,
+                    active_state=active_state,
                     test_data=test_data,
                     local_fits=local_fits,
+                    unit_system=test_unit_system,
                 )
-                self.signal_test_added.emit(test)
+                # self.signal_test_added.emit(test)
 
         return
 
@@ -299,17 +293,7 @@ class View(qtw.QWidget):
 
             unit_time, unit_stress, unit_temperature = self.get_units()
 
-            dialog = tables.InputDialog(
-                values=[
-                    cur_test_info[0],
-                    cur_test_info[1],
-                    cur_test_info[2],
-                    cur_test_info[3],
-                ],
-                unit_time=unit_time,
-                unit_stress=unit_stress,
-                unit_temperature=unit_temperature,
-            )
+            dialog = tables.AddTestDialog()
             if dialog.exec():
                 new_inputs = dialog.getInputs()
 

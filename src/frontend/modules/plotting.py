@@ -1,3 +1,4 @@
+from enum import Enum
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
@@ -5,6 +6,24 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
 from . import data_classes
+
+
+class ActiveState(Enum):
+    ON = "On"
+    OFF = "Off"
+
+
+class PlotColors(Enum):
+    BLUE = "tab:blue"
+    ORANGE = "tab:orange"
+    GREEN = "tab:green"
+    RED = "tab:red"
+    PURPLE = "tab:purple"
+    BROWN = "tab:brown"
+    PINK = "tab:pink"
+    GRAY = "tab:gray"
+    OLIVE = "tab:olive"
+    CYAN = "tab:cyan"
 
 
 class MyMplCanvas(FigureCanvas):
@@ -55,7 +74,12 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Strain (-)")
-        self.ax.plot(test.test_data.time, test.test_data.strain, color=test.color, label=test.name)
+        self.ax.plot(
+            test.test_data.time,
+            test.test_data.strain,
+            color=test.color,
+            label=test.name,
+        )
         self.draw()
         return
 
@@ -65,7 +89,12 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Strain (-/day)")
-        self.ax.plot(test.test_data.time[1::], test.test_data.strainrate, color=test.color, label=test.name)
+        self.ax.plot(
+            test.test_data.time[1::],
+            test.test_data.strainrate,
+            color=test.color,
+            label=test.name,
+        )
         self.draw()
         return
 
@@ -75,7 +104,12 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Applied Deviatoric Stress (MPa)")
-        self.ax.plot(test.test_data.time, test.test_data.stress, color=test.color, label=test.name)
+        self.ax.plot(
+            test.test_data.time,
+            test.test_data.stress,
+            color=test.color,
+            label=test.name,
+        )
         self.draw()
         return
 
@@ -85,9 +119,15 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax.grid(which="both")
         self.ax.set_xlabel("Time (Days)")
         self.ax.set_ylabel("Temperature (K)")
-        self.ax.plot(test.test_data.time, test.test_data.temperature, color=test.color, label=test.name)
+        self.ax.plot(
+            test.test_data.time,
+            test.test_data.temperature,
+            color=test.color,
+            label=test.name,
+        )
         self.draw()
         return
+
 
 class MultiPlot_Strain_Canvas(MyMplCanvas):
     def __init__(self, *args, **kwargs):
