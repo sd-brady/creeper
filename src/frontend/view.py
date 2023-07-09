@@ -13,7 +13,7 @@ from .modules import unit_system
 
 class View(qtw.QWidget):
     signal_errorbox = qtc.pyqtSignal(str)
-    signal_test_added = qtc.pyqtSignal(data_classes.Test)
+    signal_test_added = qtc.pyqtSignal(data_classes.Test, unit_system.UnitSystem)
     signal_test_deleted = qtc.pyqtSignal(int)
     signal_request_test = qtc.pyqtSignal(data_classes.Test)
     signal_test_move_up = qtc.pyqtSignal(int)
@@ -22,7 +22,9 @@ class View(qtw.QWidget):
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
     #   Arg5 is the active status
-    signal_edit_test = qtc.pyqtSignal(int, str, str, str, str)
+    signal_edit_test = qtc.pyqtSignal(
+        int, str, str, data_classes.PlotColors, data_classes.ActiveState
+    )
 
     def __init__(self, ui):
         super().__init__()
@@ -191,9 +193,8 @@ class View(qtw.QWidget):
                     active_state=active_state,
                     test_data=test_data,
                     local_fits=local_fits,
-                    unit_system=test_unit_system,
                 )
-                self.signal_test_added.emit(test)
+                self.signal_test_added.emit(test, test_unit_system)
 
         return
 
@@ -211,16 +212,21 @@ class View(qtw.QWidget):
         self.testlist_model.add_test(test)
         return
 
-    def test_suite_changed(self, test_suite: data_classes.TestSuite):
+    def test_suite_changed(self, testsuite: data_classes.TestSuite):
+        gui_usys = self.get_gui_unit_system()
+
+        # Convert the test suite to gui unit system
+        testsuite = unit_system.convert_testsuite_from_base(testsuite, gui_usys)
+
         # Update the test list table
-        self.testlist_model.place_test_suite(test_suite)
+        self.testlist_model.place_test_suite(testsuite)
         self.selmodel_testlist.clearSelection()
 
         # Clear the single plot on the Test Suite tab
         self.canvas_ts_singleplot.setup_initial_figure()
 
         # Need to update the global plot on the Test Suite tab
-        self.update_ts_multi_plot(test_suite)
+        self.update_ts_multi_plot(testsuite)
 
         return
 
@@ -292,11 +298,12 @@ class View(qtw.QWidget):
         if test_index == -1:
             pass
         else:
-            cur_test_info = self.testlist_model.get_test_info(test_index)
+            cur_name = self.testlist_model.get_test_name(test_index)
+            cur_stress = self.testlist_model.get_test_stress(test_index)
+            cur_color = self.testlist_model.get_test_color(test_index)
+            cur_active = self.testlist_model.get_test_active(test_index)
 
-            unit_system = self.get_units()
-
-            dialog = tables.EditTestDialog()
+            dialog = tables.EditTestDialog(cur_name, cur_stress, cur_color, cur_active)
             if dialog.exec():
                 new_name = dialog.get_name()
                 new_stress = dialog.get_stress()
@@ -308,9 +315,11 @@ class View(qtw.QWidget):
             )
         return
 
-    def get_units(self):
-        unit_time = self._ui.combo_unit_time.currentText()
-        unit_stress = self._ui.combo_unit_stress.currentText()
-        unit_temperature = self._ui.combo_unit_temperature.currentText()
-        print(unit_time, unit_stress, unit_temperature)
-        return (unit_time, unit_stress, unit_temperature)
+    def get_gui_unit_system(self):
+        unit_time = unit_system.UnitTime(self._ui.combo_unit_time.currentText())
+        unit_stress = unit_system.UnitStress(self._ui.combo_unit_stress.currentText())
+        unit_temperature = unit_system.UnitTemp(
+            self._ui.combo_unit_temperature.currentText()
+        )
+        usys = unit_system.UnitSystem(unit_time, unit_temperature, unit_stress)
+        return usys

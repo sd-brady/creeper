@@ -56,11 +56,12 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_test_move_up.connect(self.model.move_test_up)
         self.view.signal_test_move_down.connect(self.model.move_test_down)
         self.ui.button_ts_movedown.clicked.connect(self.view.ts_move_down)
-        self.ui.button_edit_test.clicked.connect(self.view.edit_test)
 
+        self.ui.button_edit_test.clicked.connect(self.view.edit_test)
         self.view.signal_edit_test.connect(self.model.edit_test)
 
         self.view.selmodel_testlist.selectionChanged.connect(self.model.send_test)
+
         return
 
     def messagebox_error(self, message):

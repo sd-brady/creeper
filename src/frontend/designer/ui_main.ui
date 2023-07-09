@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>900</height>
+    <height>919</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -180,12 +180,22 @@
            </property>
            <item>
             <property name="text">
-             <string>kelvin</string>
+             <string>Kelvin</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>rankine</string>
+             <string>Celsius</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Fahrenheit</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Rankine</string>
             </property>
            </item>
           </widget>
@@ -197,17 +207,17 @@
            </property>
            <item>
             <property name="text">
-             <string>seconds</string>
+             <string>Seconds</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>days</string>
+             <string>Days</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>years</string>
+             <string>Years</string>
             </property>
            </item>
           </widget>

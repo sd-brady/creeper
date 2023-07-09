@@ -65,7 +65,6 @@ class Test:
         active_state: ActiveState,
         test_data: TestData,
         local_fits: LocalFits,
-        unit_system: UnitSystem,
     ):
         # Stores the Name of the Test
         self.name = name
@@ -85,9 +84,6 @@ class Test:
 
         # Stores the local creep fits for the individual creep test
         self.local_fits = local_fits
-
-        # Stores the unit system for the test
-        self.unit_system = unit_system
 
         return
 
@@ -122,31 +118,3 @@ class TestSuite:
             test_name_list = [test.name for test in self.test_list]
 
         return test_name_list
-
-
-def empty_testdata_class():
-    empty_testdata = TestData(
-        time_list=[], strain_list=[], stress_list=[], temperature_list=[]
-    )
-
-    return empty_testdata
-
-
-def empty_localfits_class():
-    empty_localfits = LocalFits()
-    return empty_localfits
-
-
-def empty_test_class():
-    empty_test = Test(
-        name="",
-        stress=0,
-        color="",
-        time_unit="seconds",
-        temp_unit="kelvin",
-        stress_unit="mpa",
-        active_state=True,
-        test_data=empty_testdata_class(),
-        local_fits=empty_localfits_class(),
-    )
-    return empty_test

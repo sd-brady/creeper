@@ -234,12 +234,28 @@ class TestListTableModel(qtc.QAbstractTableModel):
         #     test_name = ""; stress = ""; color = ""; active = ""
         #     pass
         # else:
+        print()
         test_name = self._data[0][row]
         stress = self._data[1][row]
         color = self._data[2][row]
         active = self._data[3][row]
 
         return (test_name, stress, color, active)
+
+    def get_test_name(self, row):
+        name = self._data[0][row]
+        return self._data[0][row]
+
+    def get_test_stress(self, row):
+        return self._data[1][row]
+
+    def get_test_color(self, row):
+        print("Color is: ", self._data[2][row])
+        return self._data[2][row]
+
+    def get_test_active(self, row):
+        print("Active is: ", self._data[3][row])
+        return self._data[3][row]
 
     def refresh(self):
         self.dataChanged.emit(
@@ -349,13 +365,15 @@ class EditTestDialog(qtw.QDialog):
         self,
         name: str,
         stress: str,
-        color: data_classes.PlotColors,
-        active: data_classes.ActiveState,
+        color: str,
+        active: str,
         parent=None,
     ):
         super().__init__(parent)
 
         layout = qtw.QFormLayout(self)
+
+        self.inputs = []
 
         # ---- Rows are as follows
         # 0) Test Name (QLineEdit)
@@ -379,14 +397,14 @@ class EditTestDialog(qtw.QDialog):
         self.combo_color = qtw.QComboBox(self)
         colors = [member.value for member in data_classes.PlotColors]
         self.combo_color.addItems(colors)
-        self.combo_color.setCurrentText(color.value)
+        self.combo_color.setCurrentText(color)
         layout.addRow("Plot Color", self.combo_color)
 
         # QComboBox for active_state
         self.combo_active = qtw.QComboBox(self)
         states = [member.value for member in data_classes.ActiveState]
         self.combo_active.addItems(states)
-        self.combo_active.setCurrentText(active.value)
+        self.combo_active.setCurrentText(active)
         layout.addRow("Active Status", self.combo_active)
 
         buttonBox = qtw.QDialogButtonBox(

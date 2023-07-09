@@ -1,6 +1,7 @@
 from PyQt5 import QtCore as qtc
 
 from .modules import data_classes
+from .modules import unit_system
 
 
 class Model(qtc.QObject):
@@ -15,12 +16,16 @@ class Model(qtc.QObject):
         self.test_suite = data_classes.TestSuite()
         return
 
-    def add_test(self, test: data_classes.Test):
+    def add_test(self, test: data_classes.Test, usys: unit_system.UnitSystem):
         valid = self.validate_new_test(test.name, test.stress)
 
         if valid:
+            # Convert everything to base unit system (MPa, seconds, kelvin)
+            test = unit_system.convert_test_to_base(test, usys)
+
             self.test_suite.add_test(test)
             self.test_suite_changed.emit(self.test_suite)
+
         else:
             self.signal_error.emit(
                 "Invalid Test Data. Please check your input and try again."
@@ -82,10 +87,10 @@ class Model(qtc.QObject):
         test_index: int,
         name: str,
         stress: float,
-        color: str,
-        active: str,
+        color: data_classes.PlotColors,
+        active: data_classes.ActiveState,
     ):
-        valid = self.validate_edit_test(test_index, name, stress, color, active)
+        valid = self.validate_edit_test(test_index, name, stress)
 
         if valid:
             self.test_suite.test_list[test_index].name = name
@@ -112,9 +117,7 @@ class Model(qtc.QObject):
         else:
             return True
 
-    def validate_edit_test(
-        self, test_index, new_name, new_stress, new_color, new_active
-    ):
+    def validate_edit_test(self, test_index, new_name, new_stress):
         valid_list = []
 
         valid_list.append(self.validate_edit_test_name(test_index, new_name))
