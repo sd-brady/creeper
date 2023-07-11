@@ -4,7 +4,10 @@ from PyQt5 import QtWidgets as qtw
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
+from frontend.modules import unit_system
+
 from . import data_classes
+from . import unit_system
 
 
 class MyMplCanvas(FigureCanvas):
@@ -27,15 +30,18 @@ class MyMplCanvas(FigureCanvas):
 
 
 class SinglePlot_Strain_Canvas(MyMplCanvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, usys: data_classes.UnitSystem, *args, **kwargs):
         MyMplCanvas.__init__(self, *args, **kwargs)
-        self.setup_initial_figure()
+        self.setup_initial_figure(usys)
         return
 
-    def setup_initial_figure(self):
+    def setup_initial_figure(self, usys: unit_system.UnitSystem):
         self.clear_plot()
         self.ax.set_title("Test: None Selected")
         self.ax.grid(which="both")
+
+        self.ax.set_xlabel(f"Time ({usys.time.value})")
+        self.ax.set_xlabel(f"Strain (-)")
 
         self.ax.set_xlim(0, 60)
         self.ax.set_ylim(0, 0.001)
@@ -111,16 +117,16 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
 
 
 class MultiPlot_Strain_Canvas(MyMplCanvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, usys: data_classes.UnitSystem, *args, **kwargs):
         MyMplCanvas.__init__(self, *args, **kwargs)
-        self.setup_initial_figure()
+        self.setup_initial_figure(usys)
         return
 
-    def setup_initial_figure(self):
+    def setup_initial_figure(self, usys: unit_system.UnitSystem):
         self.clear_plot()
         self.ax.set_title("Test: None Imported")
         self.ax.grid(which="both")
-        self.ax.set_xlabel("Time (Day)")
+        self.ax.set_xlabel(f"Time ({usys.time.name})")
         self.ax.set_ylabel("Strain (-)")
 
         self.ax.set_xlim(0, 60)

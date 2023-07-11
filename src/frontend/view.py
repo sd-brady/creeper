@@ -18,6 +18,7 @@ class View(qtw.QWidget):
     signal_request_test = qtc.pyqtSignal(data_classes.Test)
     signal_test_move_up = qtc.pyqtSignal(int)
     signal_test_move_down = qtc.pyqtSignal(int)
+    signal_gui_units_changed = qtc.pyqtSignal()
 
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
@@ -42,9 +43,7 @@ class View(qtw.QWidget):
 
         return
 
-    def initialize_variables(
-        self,
-    ):
+    def initialize_variables(self):
         # self.ts_current_test = data_classes.empty_test_class()
         return
 
@@ -60,14 +59,18 @@ class View(qtw.QWidget):
 
     def config_plots(self):
         # Set up the single strain plot on the Test Suite Tab
-        self.canvas_ts_singleplot = plotting.SinglePlot_Strain_Canvas(self)
+        self.canvas_ts_singleplot = plotting.SinglePlot_Strain_Canvas(
+            usys=self.get_gui_unit_system()
+        )
         toolbar1 = NavigationToolbar(self.canvas_ts_singleplot, self)
         self._ui.verticalLayout_13.addWidget(toolbar1)
         self._ui.verticalLayout_13.addWidget(self.canvas_ts_singleplot)
         self._ui.verticalLayout_13.setAlignment(toolbar1, qtc.Qt.AlignHCenter)  # type: ignore
 
         # Set up the single strain plot on the Test Suite Tab
-        self.canvas_ts_multiplot = plotting.MultiPlot_Strain_Canvas(self)
+        self.canvas_ts_multiplot = plotting.MultiPlot_Strain_Canvas(
+            usys=self.get_gui_unit_system()
+        )
         toolbar2 = NavigationToolbar(self.canvas_ts_multiplot, self)
         self._ui.verticalLayout_14.addWidget(toolbar2)
         self._ui.verticalLayout_14.addWidget(self.canvas_ts_multiplot)
@@ -223,7 +226,7 @@ class View(qtw.QWidget):
         self.selmodel_testlist.clearSelection()
 
         # Clear the single plot on the Test Suite tab
-        self.canvas_ts_singleplot.setup_initial_figure()
+        self.canvas_ts_singleplot.setup_initial_figure(self.get_gui_unit_system())
 
         # Need to update the global plot on the Test Suite tab
         self.update_ts_multi_plot(testsuite)
@@ -236,7 +239,6 @@ class View(qtw.QWidget):
 
     def delete_test(self):
         test_index = self.selmodel_testlist.currentIndex().row()
-        print("test index: ", test_index)
         self.signal_test_deleted.emit(test_index)
         return
 
@@ -323,3 +325,35 @@ class View(qtw.QWidget):
         )
         usys = unit_system.UnitSystem(unit_time, unit_temperature, unit_stress)
         return usys
+
+    def gui_units_changed(self, test_suite: data_classes.TestSuite):
+        if len(test_suite.test_list) == 0:
+            pass
+        else:
+            # Get the gui unit system
+            gui_usys = self.get_gui_unit_system()
+
+            # Convert the test suite to gui unit system
+            test_suite = unit_system.convert_testsuite_from_base(test_suite, gui_usys)
+
+            # Change the current test list table index to -1.
+            #   Change the units of the stress and temperature columns
+            self._ui.table_testlist.selectionModel().clearCurrentIndex()
+            self._ui.table_testlist.selectionModel().clearSelection()
+            self.testlist_model.place_test_suite(test_suite)
+
+            # print the current selection
+            print("Selected Row: ", self._ui.table_testlist.currentIndex().row())
+            print("Selected Column: ", self._ui.table_testlist.currentIndex().column())
+
+            # Make sure the single plot gets re-initialized (i.e., "no test selected")
+            #   Update the axis labels acording to the new units
+            self.canvas_ts_singleplot.setup_initial_figure(gui_usys)
+
+            # Re-initialize the test data table (includes the units in the labels)
+            #   Update the units of the stress and temperature columns
+
+            # Update the multi-plot plot
+            #   Update the axis labels to the new units.
+
+        return

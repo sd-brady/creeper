@@ -118,3 +118,15 @@ class TestSuite:
             test_name_list = [test.name for test in self.test_list]
 
         return test_name_list
+
+
+def empty_test_class():
+    empty_test = Test(
+        "empty",
+        "0",
+        PlotColors("Blue"),
+        ActiveState("Off"),
+        TestData([], [], [], []),
+        [],
+    )
+    return empty_test

@@ -243,18 +243,15 @@ class TestListTableModel(qtc.QAbstractTableModel):
         return (test_name, stress, color, active)
 
     def get_test_name(self, row):
-        name = self._data[0][row]
         return self._data[0][row]
 
     def get_test_stress(self, row):
         return self._data[1][row]
 
     def get_test_color(self, row):
-        print("Color is: ", self._data[2][row])
         return self._data[2][row]
 
     def get_test_active(self, row):
-        print("Active is: ", self._data[3][row])
         return self._data[3][row]
 
     def refresh(self):

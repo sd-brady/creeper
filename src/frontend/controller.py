@@ -33,34 +33,35 @@ class MainWindow(qtw.QMainWindow):
         return
 
     def connect_signals_and_slots(self):
-        # Connect ImportCSV button clicked signal
+        self.ui.button_delta.clicked.connect(self.model.fun_debug)
+
         self.ui.button_importtest.clicked.connect(self.view.import_test_data)
-
-        # Connect error message box signal
-        self.model.signal_error.connect(self.messagebox_error)
-
-        # Connect test added signals
         self.view.signal_test_added.connect(self.model.add_test)
-        # self.model.signal_test_validated.connect(self.view.test_added)
-
-        # Connect test added signal
-        self.view.signal_test_deleted.connect(self.model.delete_test)
-
         self.model.signal_send_test.connect(self.view.get_test)
+        # self.ui.combo_unit_time.currentTextChanged.connect(
+        #     self.model.send_current_testsuite
+        # )
+        # self.ui.combo_unit_temperature.currentTextChanged.connect(
+        #     self.model.send_current_testsuite
+        # )
+        self.ui.combo_unit_stress.currentIndexChanged.connect(
+            self.model.send_current_testsuite
+        )
 
+        self.model.signal_send_testsuite.connect(self.view.gui_units_changed)
+
+        # These are good
+        self.model.signal_error.connect(self.messagebox_error)
         self.model.test_suite_changed.connect(self.view.test_suite_changed)
-
+        self.ui.button_edit_test.clicked.connect(self.view.edit_test)
+        self.view.selmodel_testlist.selectionChanged.connect(self.model.send_test)
+        self.view.signal_edit_test.connect(self.model.edit_test)
+        self.view.signal_test_deleted.connect(self.model.delete_test)
         self.ui.button_delete_test.clicked.connect(self.view.delete_test)
-
         self.ui.button_ts_moveup.clicked.connect(self.view.ts_move_up)
         self.view.signal_test_move_up.connect(self.model.move_test_up)
         self.view.signal_test_move_down.connect(self.model.move_test_down)
         self.ui.button_ts_movedown.clicked.connect(self.view.ts_move_down)
-
-        self.ui.button_edit_test.clicked.connect(self.view.edit_test)
-        self.view.signal_edit_test.connect(self.model.edit_test)
-
-        self.view.selmodel_testlist.selectionChanged.connect(self.model.send_test)
 
         return
 

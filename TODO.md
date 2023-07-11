@@ -9,6 +9,8 @@ the unit time, temp, and stress combo boxs in the gui.
         3) Convert the test suite using the GUI UnitSystem class
         4) Display new test suite on all widgets and plots
 
+* Make new empty test class for model.sent_test_class
+
 * Initialize the unit combo box options in code vs in designer. This will allow
 more flexibility if we want to add different units later. Also reduces chance
 for bugs when passing unit systems around.
