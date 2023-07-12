@@ -33,18 +33,31 @@ class View(qtw.QWidget):
         self._ui = ui
         self._ui.stacked_toplevel.setCurrentIndex(0)
 
+        self.config_buttons()
+
         self.config_tables()
         self.config_plots()
         self.config_comboboxes()
 
         self.config_slots_and_signals()
 
-        self.initialize_variables()
+        return
+
+    def config_buttons(self):
+        # Test Suite Button
+        self._ui.button_testsuite.clicked.connect(self.config_testsuite_button)
+
+        # Local Fits Button
+        self._ui.button_localfits.clicked.connect(self.config_localfits_button)
 
         return
 
-    def initialize_variables(self):
-        # self.ts_current_test = data_classes.empty_test_class()
+    def config_testsuite_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_testsuite)
+        return
+
+    def config_localfits_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_localfits)
         return
 
     def config_slots_and_signals(
@@ -83,6 +96,32 @@ class View(qtw.QWidget):
         # Configure the test data table
         self.config_testdata_table()
         self.config_testlist_table()
+        self.config_localfit_mdtable()
+        return
+
+    def config_localfit_mdtable(self):
+        # Set the table model
+        self._ui.table_localfits_md.setItemDelegateForColumn(
+            0, tables.CheckBoxDelegateQt(self)
+        )
+        self.localfits_md_model = tables.MdTableModel()
+        self._ui.table_localfits_md.setModel(self.localfits_md_model)
+
+        self._ui.table_localfits_md.horizontalHeader().setFixedHeight(40)
+        self._ui.table_localfits_md.horizontalHeader().setDefaultAlignment(
+            qtc.Qt.AlignCenter | qtc.Qt.Alignment(qtc.Qt.TextWordWrap)  # type: ignore
+        )
+        self._ui.table_localfits_md.verticalHeader().setFixedWidth(35)
+        self._ui.table_localfits_md.horizontalHeader().setSectionResizeMode(
+            qtw.QHeaderView.Stretch
+        )
+
+        column_width = 50
+        for i in range(len(self.localfits_md_model._headers)):
+            self._ui.table_localfits_md.horizontalHeader().resizeSection(
+                i, column_width
+            )
+
         return
 
     def config_testdata_table(self):
