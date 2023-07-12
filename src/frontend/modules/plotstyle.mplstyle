@@ -1,0 +1,41 @@
+
+# Lines
+lines.linewidth:2
+
+
+# Axes
+# axes.grid.which: both 
+# axes.grid: True
+xtick.major.size: 2
+ytick.major.size: 2
+xtick.minor.size: 1
+ytick.minor.size: 1
+xtick.direction: out
+ytick.direction: out
+axes.prop_cycle: cycler('color', ['darkblue','darkred','gray','green','blue','purple','darkgreen','cyan','orange'])
+
+axes.formatter.use_mathtext: False
+
+# Font
+font.family: Aktiv Grotesk Cd
+font.size: 12
+mathtext.fontset: stix
+
+# Grid
+grid.color: black       # grid color
+grid.linestyle: -       # solid
+grid.linewidth: 0.8     # in points
+grid.alpha:     0.2     # transparency, between 0.0 and 1.0
+
+xtick.minor.visible: True
+ytick.minor.visible: True
+
+# Figure
+figure.figsize: 6,4
+figure.dpi: 300
+legend.loc: best
+legend.frameon: True
+legend.facecolor: 'w' 
+legend.edgecolor: 'k'
+legend.shadow: False
+legend.framealpha: 1

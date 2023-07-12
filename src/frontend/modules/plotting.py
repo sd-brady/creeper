@@ -4,6 +4,8 @@ from PyQt5 import QtWidgets as qtw
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
+plt.style.use("frontend/modules/plotstyle.mplstyle")
+
 from frontend.modules import unit_system
 
 from . import data_classes
@@ -47,6 +49,7 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.clear_plot()
         self.ax.set_title("Test: None Selected")
         self.ax.grid(which="both")
+        self.ax.grid(which='major',alpha=0.4)
 
         self.ax.set_xlabel(f"Time ({usys.time.value})")
         if plot_type.name == "STRAIN":
@@ -79,6 +82,7 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.clear_plot()
         self.ax.set_title(f"{plot_type.value} vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
+        self.ax.grid(which='major',alpha=0.4)
         self.ax.set_xlabel(f"Time ({usys.time.value})")
         if plot_type.name == "STRAIN":
             self.ax.set_ylabel(f"Strain (-)")
@@ -134,6 +138,7 @@ class MultiPlot_Strain_Canvas(MyMplCanvas):
         self.clear_plot()
         self.ax.set_title("Test: None Selected")
         self.ax.grid(which="both")
+        self.ax.grid(which='major',alpha=0.4)
 
         self.ax.set_xlabel(f"Time ({usys.time.value})")
         if plot_type.name == "STRAIN":
