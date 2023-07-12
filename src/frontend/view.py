@@ -54,13 +54,13 @@ class View(qtw.QWidget):
         return
 
     def config_comboboxes(self):
-        self._ui.verticalLayout_9.setAlignment(self._ui.combo_ts_plotpicker, qtc.Qt.AlignRight)  # type: ignore
+        self._ui.verticalLayout_9.setAlignment(self._ui.combo_ts_plot_type, qtc.Qt.AlignRight)  # type: ignore
         return
 
     def config_plots(self):
         # Set up the single strain plot on the Test Suite Tab
         self.canvas_ts_singleplot = plotting.SinglePlot_Strain_Canvas(
-            usys=self.get_gui_unit_system()
+            usys=self.get_gui_unit_system(), plot_type=self.get_ts_plot_type()
         )
         toolbar1 = NavigationToolbar(self.canvas_ts_singleplot, self)
         self._ui.verticalLayout_13.addWidget(toolbar1)
@@ -69,7 +69,8 @@ class View(qtw.QWidget):
 
         # Set up the single strain plot on the Test Suite Tab
         self.canvas_ts_multiplot = plotting.MultiPlot_Strain_Canvas(
-            usys=self.get_gui_unit_system()
+            usys=self.get_gui_unit_system(),
+            plot_type=self.get_ts_plot_type(),
         )
         toolbar2 = NavigationToolbar(self.canvas_ts_multiplot, self)
         self._ui.verticalLayout_14.addWidget(toolbar2)
@@ -113,23 +114,21 @@ class View(qtw.QWidget):
     def get_test(self, test):
         if test.name == "":
             self.testdata_model.clear_data()
-            self.canvas_ts_singleplot.setup_initial_figure()
+            self.canvas_ts_singleplot.setup_initial_figure(
+                usys=self.get_gui_unit_system(), plot_type=self.get_ts_plot_type()
+            )
         else:
+            # Get gui unit system
+            gui_usys = self.get_gui_unit_system()
+
+            # Convert the test to the gui unit system
+            test = unit_system.convert_test_from_base(test, gui_usys)
             self.testdata_model.place_test(test)
-            self.update_ts_single_plot(test)
-        return
 
-    def update_ts_single_plot(self, test: data_classes.Test):
-        plotvar = self._ui.combo_ts_plotpicker.currentIndex()
-
-        if plotvar == 0:
-            self.canvas_ts_singleplot.update_plot_strain(test)
-        elif plotvar == 1:
-            self.canvas_ts_singleplot.update_plot_strainrate(test)
-        elif plotvar == 2:
-            self.canvas_ts_singleplot.update_plot_stress(test)
-        elif plotvar == 3:
-            self.canvas_ts_singleplot.update_plot_temp(test)
+            # Update the single plot
+            self.canvas_ts_singleplot.update_plot(
+                test=test, usys=gui_usys, plot_type=self.get_ts_plot_type()
+            )
 
         return
 
@@ -223,10 +222,16 @@ class View(qtw.QWidget):
 
         # Update the test list table
         self.testlist_model.place_test_suite(testsuite)
+        self.selmodel_testlist.clearCurrentIndex()
         self.selmodel_testlist.clearSelection()
 
+        # Clear the test data table
+        self.testdata_model.clear_data()
+
         # Clear the single plot on the Test Suite tab
-        self.canvas_ts_singleplot.setup_initial_figure(self.get_gui_unit_system())
+        self.canvas_ts_singleplot.setup_initial_figure(
+            self.get_gui_unit_system(), self.get_ts_plot_type()
+        )
 
         # Need to update the global plot on the Test Suite tab
         self.update_ts_multi_plot(testsuite)
@@ -234,20 +239,24 @@ class View(qtw.QWidget):
         return
 
     def update_ts_multi_plot(self, test_suite):
-        self.canvas_ts_multiplot.update_plot(test_suite)
+        self.canvas_ts_multiplot.update_plot(
+            test_suite=test_suite,
+            usys=self.get_gui_unit_system(),
+            plot_type=self.get_ts_plot_type(),
+        )
         return
 
     def delete_test(self):
-        test_index = self.selmodel_testlist.currentIndex().row()
-        self.signal_test_deleted.emit(test_index)
+        if self.selmodel_testlist.currentIndex().row() == -1:
+            pass
+        else:
+            test_index = self.selmodel_testlist.currentIndex().row()
+            self.signal_test_deleted.emit(test_index)
         return
 
     def ts_move_up(self):
         test_index = self.selmodel_testlist.currentIndex().row()
         num_tests = self.testlist_model.num_rows
-
-        print("test index: ", test_index)
-        print("num_tests: ", num_tests)
 
         if num_tests <= 1:
             pass
@@ -267,9 +276,6 @@ class View(qtw.QWidget):
         test_index = self.selmodel_testlist.currentIndex().row()
         num_tests = self.testlist_model.num_rows
 
-        print("test index: ", test_index)
-        print("num_tests: ", num_tests)
-
         if num_tests <= 1:
             pass
         elif test_index < 0:
@@ -286,14 +292,6 @@ class View(qtw.QWidget):
             )
             return
 
-    # # Signals for the Test Suite Tab. Arg1 is the test index to edit
-    # #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
-    # #   Arg5 is the active status
-
-    # signal_edit_test = qtc.pyqtSignal(
-    #   index:int, name:str, stress:str, color:PlotColors, active:ActiveState
-    # )
-
     def edit_test(self):
         test_index = self.selmodel_testlist.currentIndex().row()
 
@@ -301,7 +299,7 @@ class View(qtw.QWidget):
             pass
         else:
             cur_name = self.testlist_model.get_test_name(test_index)
-            cur_stress = self.testlist_model.get_test_stress(test_index)
+            cur_stress = str(self.testlist_model.get_test_stress(test_index))
             cur_color = self.testlist_model.get_test_color(test_index)
             cur_active = self.testlist_model.get_test_active(test_index)
 
@@ -326,13 +324,17 @@ class View(qtw.QWidget):
         usys = unit_system.UnitSystem(unit_time, unit_temperature, unit_stress)
         return usys
 
+    def get_ts_plot_type(self):
+        plot_type = data_classes.PlotType(self._ui.combo_ts_plot_type.currentText())
+        return plot_type
+
     def gui_units_changed(self, test_suite: data_classes.TestSuite):
+        # Get the gui unit system
+        gui_usys = self.get_gui_unit_system()
+
         if len(test_suite.test_list) == 0:
             pass
         else:
-            # Get the gui unit system
-            gui_usys = self.get_gui_unit_system()
-
             # Convert the test suite to gui unit system
             test_suite = unit_system.convert_testsuite_from_base(test_suite, gui_usys)
 
@@ -342,18 +344,31 @@ class View(qtw.QWidget):
             self._ui.table_testlist.selectionModel().clearSelection()
             self.testlist_model.place_test_suite(test_suite)
 
-            # print the current selection
-            print("Selected Row: ", self._ui.table_testlist.currentIndex().row())
-            print("Selected Column: ", self._ui.table_testlist.currentIndex().column())
+            # Clear the test data table
+            self.testdata_model.clear_data()
 
-            # Make sure the single plot gets re-initialized (i.e., "no test selected")
-            #   Update the axis labels acording to the new units
-            self.canvas_ts_singleplot.setup_initial_figure(gui_usys)
+        # Make sure the single plot gets re-initialized (i.e., "no test selected")
+        #   Update the axis labels acording to the new units
+        self.canvas_ts_singleplot.setup_initial_figure(
+            usys=gui_usys,
+            plot_type=self.get_ts_plot_type(),
+        )
 
-            # Re-initialize the test data table (includes the units in the labels)
-            #   Update the units of the stress and temperature columns
+        # Update the multi plot canvas
+        self.canvas_ts_multiplot.update_plot(
+            test_suite=test_suite,
+            usys=gui_usys,
+            plot_type=self.get_ts_plot_type(),
+        )
 
-            # Update the multi-plot plot
-            #   Update the axis labels to the new units.
+        # Update Widget Unit Labels
+        #   Update the Test List Table Units based on Gui Units
+        self.testlist_model.update_stress_header(gui_usys.stress)
+
+        #   Update the Test Data List Units based on Gui Units
+        # self.
+        self.testdata_model.update_time_header(gui_usys.time)
+        self.testdata_model.update_temp_header(gui_usys.temperature)
+        self.testdata_model.update_stress_header(gui_usys.stress)
 
         return

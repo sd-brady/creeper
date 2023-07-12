@@ -11,8 +11,8 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         super().__init__()
 
         self._headers = [
-            "Time (Days)",
-            "Temperature (K)",
+            "Time (Seconds)",
+            "Temperature (Kelvin)",
             "Deviatoric Stress (MPa)",
             "Creep Strain (-)",
         ]
@@ -34,6 +34,21 @@ class TestDataTableModel(qtc.QAbstractTableModel):
             self.index(len(self._headerkeys), len(self._data[0]))
         )
 
+        return
+
+    def update_time_header(self, time_unit: unit_system.UnitTime):
+        self._headers[0] = f"Time ({time_unit.value})"
+        self.headerDataChanged.emit(qtc.Qt.Horizontal, 0, len(self._headers) - 1)
+        return
+
+    def update_temp_header(self, temp_unit: unit_system.UnitTemp):
+        self._headers[1] = f"Temperature ({temp_unit.value})"
+        self.headerDataChanged.emit(qtc.Qt.Horizontal, 0, len(self._headers) - 1)
+        return
+
+    def update_stress_header(self, stress_unit: unit_system.UnitStress):
+        self._headers[2] = f"Deviatoric Stress ({stress_unit.value})"
+        self.headerDataChanged.emit(qtc.Qt.Horizontal, 0, len(self._headers) - 1)
         return
 
     def new_data(self):
@@ -128,7 +143,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
 
         self._headers = [
             "Test Name",
-            "Stress Difference",
+            "Deviatoric Stress (MPa)",
             "Plot Color",
             "Active",
         ]
@@ -143,6 +158,11 @@ class TestListTableModel(qtc.QAbstractTableModel):
         self.num_rows = 0
         self.new_data()
 
+        return
+
+    def update_stress_header(self, stress_unit: unit_system.UnitStress):
+        self._headers[1] = f"Deviatoric Stress ({stress_unit.value})"
+        self.headerDataChanged.emit(qtc.Qt.Horizontal, 0, len(self._headers) - 1)
         return
 
     def new_data(self):
@@ -234,7 +254,6 @@ class TestListTableModel(qtc.QAbstractTableModel):
         #     test_name = ""; stress = ""; color = ""; active = ""
         #     pass
         # else:
-        print()
         test_name = self._data[0][row]
         stress = self._data[1][row]
         color = self._data[2][row]
@@ -371,16 +390,6 @@ class EditTestDialog(qtw.QDialog):
         layout = qtw.QFormLayout(self)
 
         self.inputs = []
-
-        # ---- Rows are as follows
-        # 0) Test Name (QLineEdit)
-        # 1) Time Unit (QCombobox)
-        # 2) Stress Unit (QCombobox)
-        # 3) Temperature Unit (QCombobox)
-        # 4) Applied Deviatoric Stress (QLineEdit)
-        # 5) Color (QCombobox)
-        # 6) Active Status (QCombobox)
-        # 7) ButtonBox
 
         # QLineEdit for Test Name
         self.lineedit_testname = qtw.QLineEdit(self, text=name)

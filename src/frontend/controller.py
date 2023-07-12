@@ -38,16 +38,20 @@ class MainWindow(qtw.QMainWindow):
         self.ui.button_importtest.clicked.connect(self.view.import_test_data)
         self.view.signal_test_added.connect(self.model.add_test)
         self.model.signal_send_test.connect(self.view.get_test)
-        # self.ui.combo_unit_time.currentTextChanged.connect(
-        #     self.model.send_current_testsuite
-        # )
-        # self.ui.combo_unit_temperature.currentTextChanged.connect(
-        #     self.model.send_current_testsuite
-        # )
+        self.ui.combo_unit_time.currentTextChanged.connect(
+            self.model.send_current_testsuite
+        )
+        self.ui.combo_unit_temperature.currentTextChanged.connect(
+            self.model.send_current_testsuite
+        )
         self.ui.combo_unit_stress.currentIndexChanged.connect(
             self.model.send_current_testsuite
         )
+        self.ui.combo_ts_plot_type.currentIndexChanged.connect(
+            self.model.send_current_testsuite
+        )
 
+        # self.model.signal_send_testsuite.connect(self.view.ts_plot_type_changed)
         self.model.signal_send_testsuite.connect(self.view.gui_units_changed)
 
         # These are good

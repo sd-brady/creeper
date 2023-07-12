@@ -40,7 +40,7 @@ class Model(qtc.QObject):
             pass
         else:
             row = selected.indexes()[0].row()
-            if row + 1 > self.test_suite.num_tests:
+            if row + 1 > self.test_suite.num_tests or row < 0:
                 self.signal_send_test.emit(deepcopy(data_classes.empty_test_class()))
             else:
                 self.signal_send_test.emit(deepcopy(self.test_suite.test_list[row]))
@@ -51,7 +51,6 @@ class Model(qtc.QObject):
         if index + 1 <= len(self.test_suite.test_list):
             self.test_suite.delete_test(index)
             self.test_suite_changed.emit(deepcopy(self.test_suite))
-        print("3.")
         return
 
     def move_test_down(self, test_index: int):
@@ -101,7 +100,6 @@ class Model(qtc.QObject):
             )
             pass
 
-        print("6.")
         return
 
     def validate_new_test(self, new_name, new_stress):
@@ -110,7 +108,6 @@ class Model(qtc.QObject):
         valid_list.append(self.validate_new_test_name(new_name))
         valid_list.append(self.validate_new_test_stress(new_stress))
 
-        print("7.")
         if False in valid_list:
             return False
         else:
@@ -122,14 +119,12 @@ class Model(qtc.QObject):
         valid_list.append(self.validate_edit_test_name(test_index, new_name))
         valid_list.append(self.validate_new_test_stress(new_stress))
 
-        print("8.")
         if False in valid_list:
             return False
         else:
             return True
 
     def validate_new_test_name(self, new_name):
-        print("9.")
         # Need to make sure the name is not already in the test suite
         if new_name in self.test_suite.get_test_names():
             return False
@@ -142,7 +137,6 @@ class Model(qtc.QObject):
         # Need to make sure the name is not already in the test suite
         #   (other than the test being edited)
 
-        print("10.")
         if (
             new_name in self.test_suite.get_test_names()
             and new_name != self.test_suite.test_list[test_index].name
@@ -154,7 +148,6 @@ class Model(qtc.QObject):
             return True
 
     def validate_new_test_stress(self, new_stress):
-        print("11.")
         # Make sure it isn't an empty string
         if new_stress == "":
             return False
@@ -175,7 +168,6 @@ class Model(qtc.QObject):
         return
 
     def fun_debug(self):
-        print("13.")
         if len(self.test_suite.test_list) > 0:
             print(self.test_suite.test_list[0].stress)
         else:

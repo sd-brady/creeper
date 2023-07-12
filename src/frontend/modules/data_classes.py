@@ -4,6 +4,13 @@ from enum import Enum
 from .unit_system import UnitSystem
 
 
+class PlotType(Enum):
+    STRAIN = "Strain"
+    STRAINRATE = "Strain Rate"
+    STRESS = "Deviatoric Stress"
+    TEMPERATURE = "Temperature"
+
+
 class ActiveState(Enum):
     ON = "On"
     OFF = "Off"

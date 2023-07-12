@@ -30,18 +30,33 @@ class MyMplCanvas(FigureCanvas):
 
 
 class SinglePlot_Strain_Canvas(MyMplCanvas):
-    def __init__(self, usys: data_classes.UnitSystem, *args, **kwargs):
+    def __init__(
+        self,
+        usys: data_classes.UnitSystem,
+        plot_type: data_classes.PlotType,
+        *args,
+        **kwargs,
+    ):
         MyMplCanvas.__init__(self, *args, **kwargs)
-        self.setup_initial_figure(usys)
+        self.setup_initial_figure(usys, plot_type)
         return
 
-    def setup_initial_figure(self, usys: unit_system.UnitSystem):
+    def setup_initial_figure(
+        self, usys: unit_system.UnitSystem, plot_type: data_classes.PlotType
+    ):
         self.clear_plot()
         self.ax.set_title("Test: None Selected")
         self.ax.grid(which="both")
 
         self.ax.set_xlabel(f"Time ({usys.time.value})")
-        self.ax.set_xlabel(f"Strain (-)")
+        if plot_type.name == "STRAIN":
+            self.ax.set_ylabel(f"Strain (-)")
+        elif plot_type.name == "STRAINRATE":
+            self.ax.set_ylabel(f"Strain Rate (-/{usys.time.value})")
+        elif plot_type.name == "TEMPERATURE":
+            self.ax.set_ylabel(f"Temperature ({usys.temperature.value})")
+        elif plot_type.name == "STRESS":
+            self.ax.set_ylabel(f"Deviatoric Stress ({usys.stress.value})")
 
         self.ax.set_xlim(0, 60)
         self.ax.set_ylim(0, 0.001)
@@ -55,79 +70,80 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
         self.ax = self.fig.add_subplot(111)
         return
 
-    def update_plot_strain(self, test: data_classes.Test):
+    def update_plot(
+        self,
+        test: data_classes.Test,
+        usys: unit_system.UnitSystem,
+        plot_type: data_classes.PlotType,
+    ):
         self.clear_plot()
-        self.ax.set_title(f"Strain vs. Time for Test: {test.name}")
+        self.ax.set_title(f"{plot_type.value} vs. Time for Test: {test.name}")
         self.ax.grid(which="both")
-        self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Strain (-)")
-        self.ax.plot(
-            test.test_data.time,
-            test.test_data.strain,
-            color=test.color.value,
-            label=test.name,
-        )
-        self.draw()
-        return
-
-    def update_plot_strainrate(self, test: data_classes.Test):
-        self.clear_plot()
-        self.ax.set_title(f"Strain Rate vs. Time for Test: {test.name}")
-        self.ax.grid(which="both")
-        self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Strain (-/day)")
-        self.ax.plot(
-            test.test_data.time[1::],
-            test.test_data.strainrate,
-            color=test.color.value,
-            label=test.name,
-        )
-        self.draw()
-        return
-
-    def update_plot_stress(self, test: data_classes.Test):
-        self.clear_plot()
-        self.ax.set_title(f"Applied Deviatoric Stress vs. Time for Test: {test.name}")
-        self.ax.grid(which="both")
-        self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Applied Deviatoric Stress (MPa)")
-        self.ax.plot(
-            test.test_data.time,
-            test.test_data.stress,
-            color=test.color,
-            label=test.name,
-        )
-        self.draw()
-        return
-
-    def update_plot_temp(self, test: data_classes.Test):
-        self.clear_plot()
-        self.ax.set_title(f"Applied Temperature vs. Time for Test: {test.name}")
-        self.ax.grid(which="both")
-        self.ax.set_xlabel("Time (Days)")
-        self.ax.set_ylabel("Temperature (K)")
-        self.ax.plot(
-            test.test_data.time,
-            test.test_data.temperature,
-            color=test.color,
-            label=test.name,
-        )
+        self.ax.set_xlabel(f"Time ({usys.time.value})")
+        if plot_type.name == "STRAIN":
+            self.ax.set_ylabel(f"Strain (-)")
+            self.ax.plot(
+                test.test_data.time,
+                test.test_data.strain,
+                color=test.color.value,
+                label=test.name,
+            )
+        elif plot_type.name == "STRAINRATE":
+            self.ax.set_ylabel(f"Strain Rate (-/{usys.time.value})")
+            self.ax.plot(
+                test.test_data.time[1::],
+                test.test_data.strainrate,
+                color=test.color.value,
+                label=test.name,
+            )
+        elif plot_type.name == "TEMPERATURE":
+            self.ax.set_ylabel(f"Temperature ({usys.temperature.value})")
+            self.ax.plot(
+                test.test_data.time,
+                test.test_data.temperature,
+                color=test.color.value,
+                label=test.name,
+            )
+        elif plot_type.name == "STRESS":
+            self.ax.set_ylabel(f"Deviatoric Stress ({usys.stress.value})")
+            self.ax.plot(
+                test.test_data.time,
+                test.test_data.stress,
+                color=test.color.value,
+                label=test.name,
+            )
         self.draw()
         return
 
 
 class MultiPlot_Strain_Canvas(MyMplCanvas):
-    def __init__(self, usys: data_classes.UnitSystem, *args, **kwargs):
+    def __init__(
+        self,
+        usys: data_classes.UnitSystem,
+        plot_type: data_classes.PlotType,
+        *args,
+        **kwargs,
+    ):
         MyMplCanvas.__init__(self, *args, **kwargs)
-        self.setup_initial_figure(usys)
+        self.setup_initial_figure(usys, plot_type)
         return
 
-    def setup_initial_figure(self, usys: unit_system.UnitSystem):
+    def setup_initial_figure(
+        self, usys: unit_system.UnitSystem, plot_type: data_classes.PlotType
+    ):
         self.clear_plot()
-        self.ax.set_title("Test: None Imported")
+        self.ax.set_title("Test: None Selected")
         self.ax.grid(which="both")
-        self.ax.set_xlabel(f"Time ({usys.time.name})")
-        self.ax.set_ylabel("Strain (-)")
+
+        self.ax.set_xlabel(f"Time ({usys.time.value})")
+        if plot_type.name == "STRAIN":
+            self.ax.set_ylabel(f"Strain (-)")
+        elif plot_type.name == "STRAINRATE":
+            self.ax.set_ylabel(f"Strain Rate (-/{usys.time.value})")
+        elif plot_type.name == "TEMPERATURE":
+            self.ax.set_ylabel(f"Temperature ({usys.temperature.value})")
+        elif plot_type.name == "STRESS":
+            self.ax.set_ylabel(f"Deviatoric Stress ({usys.stress.value})")
 
         self.ax.set_xlim(0, 60)
         self.ax.set_ylim(0, 0.001)
@@ -139,24 +155,53 @@ class MultiPlot_Strain_Canvas(MyMplCanvas):
         self.ax.cla()
         return
 
-    def update_plot(self, test_suite: data_classes.TestSuite):
+    def update_plot(
+        self,
+        test_suite: data_classes.TestSuite,
+        usys: unit_system.UnitSystem,
+        plot_type: data_classes.PlotType,
+    ):
         self.clear_plot()
         if test_suite.num_tests == 0:
-            self.setup_initial_figure()
+            self.setup_initial_figure(usys, plot_type)
         else:
-            self.ax.set_title(f"Strain vs. Time for All Tests")
+            self.ax.set_title(f"{plot_type.value} vs. Time")
             self.ax.grid(which="both")
-            self.ax.set_xlabel("Time (Days)")
-            self.ax.set_ylabel("Strain (-)")
-
-            for i in range(test_suite.num_tests):
-                self.ax.plot(
-                    test_suite.test_list[i].test_data.time,
-                    test_suite.test_list[i].test_data.strain,
-                    color=test_suite.test_list[i].color.value,
-                    label=test_suite.test_list[i].name,
-                )
-
+            self.ax.set_xlabel(f"Time ({usys.time.value})")
+            for i in range(len(test_suite.test_list)):
+                if test_suite.test_list[i].active_state.value == "On":
+                    if plot_type.name == "STRAIN":
+                        self.ax.set_ylabel(f"Strain (-)")
+                        self.ax.plot(
+                            test_suite.test_list[i].test_data.time,
+                            test_suite.test_list[i].test_data.strain,
+                            color=test_suite.test_list[i].color.value,
+                            label=test_suite.test_list[i].name,
+                        )
+                    elif plot_type.name == "STRAINRATE":
+                        self.ax.set_ylabel(f"Strain Rate (-/{usys.time.value})")
+                        self.ax.plot(
+                            test_suite.test_list[i].test_data.time[1::],
+                            test_suite.test_list[i].test_data.strainrate,
+                            color=test_suite.test_list[i].color.value,
+                            label=test_suite.test_list[i].name,
+                        )
+                    elif plot_type.name == "TEMPERATURE":
+                        self.ax.set_ylabel(f"Temperature ({usys.temperature.value})")
+                        self.ax.plot(
+                            test_suite.test_list[i].test_data.time,
+                            test_suite.test_list[i].test_data.temperature,
+                            color=test_suite.test_list[i].color.value,
+                            label=test_suite.test_list[i].name,
+                        )
+                    elif plot_type.name == "STRESS":
+                        self.ax.set_ylabel(f"Deviatoric Stress ({usys.stress.value})")
+                        self.ax.plot(
+                            test_suite.test_list[i].test_data.time,
+                            test_suite.test_list[i].test_data.stress,
+                            color=test_suite.test_list[i].color.value,
+                            label=test_suite.test_list[i].name,
+                        )
             self.ax.legend()
             self.draw()
         return

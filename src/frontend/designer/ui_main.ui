@@ -406,25 +406,25 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QComboBox" name="combo_ts_plotpicker">
+               <widget class="QComboBox" name="combo_ts_plot_type">
                 <item>
                  <property name="text">
-                  <string>Strain vs. Time</string>
+                  <string>Strain</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Strain Rate vs. Time</string>
+                  <string>Strain Rate</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Applied Deviatoric Stress vs. Time</string>
+                  <string>Deviatoric Stress</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Temperature vs. Time</string>
+                  <string>Temperature</string>
                  </property>
                 </item>
                </widget>
@@ -500,7 +500,7 @@
               </item>
              </layout>
              <zorder>frame_ts_singleplot</zorder>
-             <zorder>combo_ts_plotpicker</zorder>
+             <zorder>combo_ts_plot_type</zorder>
              <zorder>frame_ts_multiplot</zorder>
             </widget>
            </item>
