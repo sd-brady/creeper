@@ -1,3 +1,4 @@
+from copy import deepcopy
 from PyQt5 import QtCore as qtc
 
 from .modules import data_classes
@@ -25,15 +26,13 @@ class Model(qtc.QObject):
             test = unit_system.convert_test_to_base(test, usys)
 
             self.test_suite.add_test(test)
-            self.test_suite_changed.emit(self.test_suite)
+            self.test_suite_changed.emit(deepcopy(self.test_suite))
 
         else:
             self.signal_error.emit(
                 "Invalid Test Data. Please check your input and try again."
             )
             pass
-
-        print("1.")
         return
 
     def send_test(self, selected: qtc.QItemSelection, deselected: qtc.QItemSelection):
@@ -42,17 +41,16 @@ class Model(qtc.QObject):
         else:
             row = selected.indexes()[0].row()
             if row + 1 > self.test_suite.num_tests:
-                self.signal_send_test.emit(data_classes.empty_test_class())
+                self.signal_send_test.emit(deepcopy(data_classes.empty_test_class()))
             else:
-                self.signal_send_test.emit(self.test_suite.test_list[row])
-        print("2.")
+                self.signal_send_test.emit(deepcopy(self.test_suite.test_list[row]))
         return
 
     @qtc.pyqtSlot(int)
     def delete_test(self, index):
         if index + 1 <= len(self.test_suite.test_list):
             self.test_suite.delete_test(index)
-            self.test_suite_changed.emit(self.test_suite)
+            self.test_suite_changed.emit(deepcopy(self.test_suite))
         print("3.")
         return
 
@@ -66,8 +64,7 @@ class Model(qtc.QObject):
             self.test_suite.test_list[test_index],
         )
 
-        self.test_suite_changed.emit(self.test_suite)
-        print("4.")
+        self.test_suite_changed.emit(deepcopy(self.test_suite))
         return
 
     def move_test_up(self, test_index: int):
@@ -79,8 +76,7 @@ class Model(qtc.QObject):
             self.test_suite.test_list[test_index],
         )
 
-        self.test_suite_changed.emit(self.test_suite)
-        print("5.")
+        self.test_suite_changed.emit(deepcopy(self.test_suite))
         return
 
     def edit_test(
@@ -98,7 +94,7 @@ class Model(qtc.QObject):
             self.test_suite.test_list[test_index].stress = stress
             self.test_suite.test_list[test_index].color = color
             self.test_suite.test_list[test_index].active_state = active
-            self.test_suite_changed.emit(self.test_suite)
+            self.test_suite_changed.emit(deepcopy(self.test_suite))
         else:
             self.signal_error.emit(
                 "Invalid Test Data. Please check your input and try again."
@@ -175,7 +171,7 @@ class Model(qtc.QObject):
         return True
 
     def send_current_testsuite(self):
-        self.signal_send_testsuite.emit(self.test_suite)
+        self.signal_send_testsuite.emit(deepcopy(self.test_suite))
         return
 
     def fun_debug(self):
