@@ -96,32 +96,6 @@ class View(qtw.QWidget):
         # Configure the test data table
         self.config_testdata_table()
         self.config_testlist_table()
-        self.config_localfit_mdtable()
-        return
-
-    def config_localfit_mdtable(self):
-        # Set the table model
-        self._ui.table_localfits_md.setItemDelegateForColumn(
-            0, tables.CheckBoxDelegateQt(self)
-        )
-        self.localfits_md_model = tables.MdTableModel()
-        self._ui.table_localfits_md.setModel(self.localfits_md_model)
-
-        self._ui.table_localfits_md.horizontalHeader().setFixedHeight(40)
-        self._ui.table_localfits_md.horizontalHeader().setDefaultAlignment(
-            qtc.Qt.AlignCenter | qtc.Qt.Alignment(qtc.Qt.TextWordWrap)  # type: ignore
-        )
-        self._ui.table_localfits_md.verticalHeader().setFixedWidth(35)
-        self._ui.table_localfits_md.horizontalHeader().setSectionResizeMode(
-            qtw.QHeaderView.Stretch
-        )
-
-        column_width = 50
-        for i in range(len(self.localfits_md_model._headers)):
-            self._ui.table_localfits_md.horizontalHeader().resizeSection(
-                i, column_width
-            )
-
         return
 
     def config_testdata_table(self):
