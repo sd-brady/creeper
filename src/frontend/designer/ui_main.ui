@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1202</width>
     <height>919</height>
    </rect>
   </property>
@@ -517,6 +517,18 @@
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QFrame" name="frame_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>580</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -524,20 +536,6 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Choose Test to Fit:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="combo_localfits_testlist"/>
-             </item>
-            </layout>
-           </item>
            <item>
             <widget class="QFrame" name="frame_6">
              <property name="frameShape">
@@ -548,17 +546,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <widget class="QWidget" name="md" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_6">
-                 <item>
-                  <layout class="QVBoxLayout" name="localfit_md_layout">
-                   <item>
-                    <widget class="MdWidget" name="widget" native="true"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
+               <widget class="MdWidget" name="localfit_mdwidget" native="true"/>
               </item>
              </layout>
             </widget>
@@ -568,6 +556,12 @@
         </item>
         <item>
          <widget class="QFrame" name="frame_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>580</width>
@@ -618,7 +612,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1202</width>
      <height>20</height>
     </rect>
    </property>

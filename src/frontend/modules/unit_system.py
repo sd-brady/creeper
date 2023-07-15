@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from . import data_classes
+    from . import mdmodel
 
 
 class UnitTime(Enum):
@@ -65,6 +66,8 @@ class UnitSystem:
 
 
 def convert_time_to_base(from_value: float, from_unit: UnitTime):
+    if from_value == "":
+        return from_value
     if from_unit.name == UnitTime["SECONDS"].name:
         to_value = from_value
     elif from_unit.name == UnitTime["DAYS"].name:
@@ -77,6 +80,8 @@ def convert_time_to_base(from_value: float, from_unit: UnitTime):
 
 
 def convert_time_from_base(from_value: float, to_unit: UnitTime):
+    if from_value == "":
+        return from_value
     if to_unit.name == UnitTime["SECONDS"].name:
         to_value = from_value
     elif to_unit.name == UnitTime["DAYS"].name:
@@ -89,6 +94,8 @@ def convert_time_from_base(from_value: float, to_unit: UnitTime):
 
 
 def convert_stress_to_base(from_value: float, from_unit: UnitStress):
+    if from_value == "":
+        return from_value
     if from_unit.name == UnitStress["MPA"].name:
         to_value = from_value
     elif from_unit.name == UnitStress["PSI"].name:
@@ -99,6 +106,8 @@ def convert_stress_to_base(from_value: float, from_unit: UnitStress):
 
 
 def convert_stress_from_base(from_value: float, to_unit: UnitStress):
+    if from_value == "":
+        return from_value
     if to_unit.name == UnitStress["MPA"].name:
         to_value = from_value
     elif to_unit.name == UnitStress["PSI"].name:
@@ -109,6 +118,8 @@ def convert_stress_from_base(from_value: float, to_unit: UnitStress):
 
 
 def convert_temp_to_base(from_value: float, from_unit: UnitTemp):
+    if from_value == "":
+        return from_value
     if from_unit.name == UnitTemp["KELVIN"].name:
         to_value = from_value
     elif from_unit.name == UnitTemp["CELSIUS"].name:
@@ -123,6 +134,8 @@ def convert_temp_to_base(from_value: float, from_unit: UnitTemp):
 
 
 def convert_temp_from_base(from_value: float, to_unit: UnitTemp):
+    if from_value == "":
+        return from_value
     if to_unit.name == UnitTemp["KELVIN"].name:
         to_value = from_value
     elif to_unit.name == UnitTemp["CELSIUS"].name:
@@ -180,6 +193,8 @@ def convert_test_from_base(test: "data_classes.Test", gui_usys: UnitSystem):
 
 
 def convert_strainrate_from_base(from_value: float, from_unit: UnitTime):
+    if from_value == "":
+        return from_value
     if from_unit.name == UnitTime["SECONDS"].name:
         to_value = from_value
     elif from_unit.name == UnitTime["DAYS"].name:
@@ -192,6 +207,8 @@ def convert_strainrate_from_base(from_value: float, from_unit: UnitTime):
 
 
 def convert_strainrate_to_base(from_value: float, from_unit: UnitTime):
+    if from_value == "":
+        return from_value
     if from_unit.name == UnitTime["SECONDS"].name:
         to_value = from_value
     elif from_unit.name == UnitTime["DAYS"].name:
@@ -238,3 +255,112 @@ def convert_test_to_base(test: "data_classes.Test", test_usys: UnitSystem):
 
     # Convert local fits to gui units
     return test
+
+
+def convert_mdmodel_from_base(md_model: "mdmodel.MdModel", gui_usys: UnitSystem):
+    print(md_model.a1)
+    print(type(md_model.a1))
+    # Convert Parameters with Time Units (a1, a2, b1, b2)
+    md_model.a1 = convert_invtime_from_base(md_model.a1, gui_usys.time)
+    md_model.a2 = convert_invtime_from_base(md_model.a2, gui_usys.time)
+    md_model.b1 = convert_invtime_from_base(md_model.b1, gui_usys.time)
+    md_model.b2 = convert_invtime_from_base(md_model.b2, gui_usys.time)
+
+    # Convert Parameters with Temperature Units (q1divr, q2divr, c)
+    md_model.q1divr = convert_temp_from_base(md_model.q1divr, gui_usys.temperature)
+    md_model.q2divr = convert_temp_from_base(md_model.q2divr, gui_usys.temperature)
+    md_model.c = convert_invtemp_from_base(md_model.c, gui_usys.temperature)
+
+    # Convert Parameters with Stress Units (sig0, mu)
+    md_model.sig0 = convert_stress_from_base(md_model.sig0, gui_usys.stress)
+    md_model.mu = convert_stress_from_base(md_model.mu, gui_usys.stress)
+
+    return md_model
+
+
+def convert_mdmodel_to_base(md_model: "mdmodel.MdModel", usys: UnitSystem):
+    # Convert Parameters with Time Units (a1, a2, b1, b2)
+    md_model.a1 = convert_invtime_to_base(md_model.a1, usys.time)
+    md_model.a2 = convert_invtime_to_base(md_model.a2, usys.time)
+    md_model.b1 = convert_invtime_to_base(md_model.b1, usys.time)
+    md_model.b2 = convert_invtime_to_base(md_model.b2, usys.time)
+
+    # Convert Parameters with Temperature Units (q1divr, q2divr, c)
+    md_model.q1divr = convert_temp_to_base(md_model.q1divr, usys.temperature)
+    md_model.q2divr = convert_temp_to_base(md_model.q2divr, usys.temperature)
+    md_model.c = convert_invtemp_to_base(md_model.c, usys.temperature)
+
+    # Convert Parameters with Stress Units (sig0, mu)
+    md_model.sig0 = convert_stress_to_base(md_model.sig0, usys.stress)
+    md_model.mu = convert_stress_to_base(md_model.mu, usys.stress)
+
+    return md_model
+
+
+def convert_invtime_to_base(from_value: float, from_unit: UnitTime):
+    if from_value == "":
+        return from_value
+    if from_unit.name == UnitTime["SECONDS"].name:
+        to_value = from_value
+    elif from_unit.name == UnitTime["DAYS"].name:
+        to_value = from_value / (24.0 * 60.0 * 60.0)
+    elif from_unit.name == UnitTime["YEARS"].name:
+        to_value = from_value / (365.0 * 24.0 * 60.0 * 60.0)
+    else:
+        raise Exception("Invalid time unit.")
+    return to_value
+
+
+def convert_invtime_from_base(from_value: float, to_unit: UnitTime):
+    if from_value == "":
+        return from_value
+    if to_unit.name == UnitTime["SECONDS"].name:
+        to_value = from_value
+    elif to_unit.name == UnitTime["DAYS"].name:
+        to_value = from_value * (24.0 * 60.0 * 60.0)
+    elif to_unit.name == UnitTime["YEARS"].name:
+        to_value = from_value * (365.0 * 24.0 * 60.0 * 60.0)
+    else:
+        raise Exception("Invalid time unit.")
+    return to_value
+
+
+def convert_invtemp_to_base(from_value: float, from_unit: UnitTemp):
+    if from_value == "":
+        return from_value
+    if from_unit.name == UnitTemp["KELVIN"].name:
+        to_value = from_value
+    elif from_unit.name == UnitTemp["CELSIUS"].name:
+        to_value = from_value
+    elif from_unit.name == UnitTemp["FAHRENHEIT"].name:
+        to_value = from_value * (1.0 / 0.5556)
+    elif from_unit.name == UnitTemp["RANKINE"].name:
+        to_value = from_value * (1.0 / 0.5556)
+    else:
+        raise Exception("Invalid temperature unit")
+
+    print(
+        f"{from_value} ({from_unit.name})^(-1) was converted to {to_value} (Kelvin)^(-1)."
+    )
+    return to_value
+
+
+def convert_invtemp_from_base(from_value: float, to_unit: UnitTemp):
+    if from_value == "":
+        return from_value
+    if to_unit.name == UnitTemp["KELVIN"].name:
+        to_value = from_value
+    elif to_unit.name == UnitTemp["CELSIUS"].name:
+        to_value = from_value
+    elif to_unit.name == UnitTemp["FAHRENHEIT"].name:
+        to_value = from_value * 0.5556
+    elif to_unit.name == UnitTemp["RANKINE"].name:
+        to_value = from_value * 0.5556
+    else:
+        raise Exception("Invalid temperature unit")
+
+    print(
+        f"{from_value} (Kelvin)^(-1) was converted to {to_value} ({to_unit.name})^(-1)."
+    )
+
+    return to_value
