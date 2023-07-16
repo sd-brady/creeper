@@ -67,13 +67,9 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_test_move_down.connect(self.model.move_test_down)
         self.ui.button_ts_movedown.clicked.connect(self.view.ts_move_down)
 
-        self.ui.localfit_mdwidget.button_softsalt.clicked.connect(
-            self.view.localfit_place_softsalt
-        )
-        self.ui.localfit_mdwidget.button_hardsalt.clicked.connect(
-            self.view.localfit_place_hardsalt
-        )
-        self.ui.localfit_mdwidget.button_cleartable.clicked.connect(
+        self.ui.button_lf_softsalt.clicked.connect(self.view.localfit_place_softsalt)
+        self.ui.button_lf_hardsalt.clicked.connect(self.view.localfit_place_hardsalt)
+        self.ui.button_lf_cleartable.clicked.connect(
             self.ui.localfit_mdwidget.clear_table
         )
         return

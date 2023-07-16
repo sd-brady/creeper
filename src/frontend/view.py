@@ -389,24 +389,18 @@ class View(qtw.QWidget):
         self.testdata_model.update_stress_header(gui_usys.stress)
 
         # Convert the units in the local fit md_widget
-        self._ui.localfit_mdwidget.convert_table_units(gui_usys)
+        self._ui.localfit_mdwidget.convert_usys(gui_usys)
 
         return
 
     def localfit_place_softsalt(self):
         softsalt_model = mdmodel.MdModel()
-        softsalt_model.set_soft_salt_base_units()
-        softsalt_model = unit_system.convert_mdmodel_from_base(
-            md_model=softsalt_model, gui_usys=self.get_gui_unit_system()
-        )
+        softsalt_model.set_soft_salt(self.get_gui_unit_system())
         self._ui.localfit_mdwidget.place_mdmodel(softsalt_model)
         return
 
     def localfit_place_hardsalt(self):
         hardsalt_model = mdmodel.MdModel()
-        hardsalt_model.set_hard_salt_base_units()
-        hardsalt_model = unit_system.convert_mdmodel_from_base(
-            md_model=hardsalt_model, gui_usys=self.get_gui_unit_system()
-        )
+        hardsalt_model.set_hard_salt(self.get_gui_unit_system())
         self._ui.localfit_mdwidget.place_mdmodel(hardsalt_model)
         return
