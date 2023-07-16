@@ -648,7 +648,11 @@
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QListWidget" name="listWidget"/>
+                 <widget class="QListWidget" name="list_lf_testlist">
+                  <property name="itemAlignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
                 </item>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label">
@@ -661,7 +665,11 @@
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QListWidget" name="listWidget_2"/>
+                 <widget class="QListWidget" name="list_lf_fitlist">
+                  <property name="itemAlignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
                 </item>
                 <item row="3" column="0">
                  <widget class="QPushButton" name="button_lf_deletefit">

@@ -38,6 +38,7 @@ class View(qtw.QWidget):
         self.config_buttons()
 
         self.config_tables()
+        self.config_listwidgets()
         self.config_plots()
         self.config_comboboxes()
 
@@ -45,6 +46,9 @@ class View(qtw.QWidget):
 
         # self._ui.localfit_mdwidget.a1_value.setText("Tiddies!")
 
+        return
+
+    def config_listwidgets(self):
         return
 
     def config_buttons(self):
@@ -252,6 +256,13 @@ class View(qtw.QWidget):
 
         # Need to update the global plot on the Test Suite tab
         self.update_ts_multi_plot(testsuite)
+
+        # Need to update the test list widget on the local fits tab
+        self._ui.list_lf_testlist.clear()
+        for item_text in testsuite.get_test_names():
+            item = qtw.QListWidgetItem(item_text)
+            item.setTextAlignment(qtc.Qt.AlignHCenter)
+            self._ui.list_lf_testlist.addItem(item)
 
         return
 
