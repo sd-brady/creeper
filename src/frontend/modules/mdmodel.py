@@ -2,7 +2,15 @@ from . import unit_system
 
 
 class MdModel:
+    def __init__(self):
+        return
+
     def set_soft_salt(self, usys: unit_system.UnitSystem):
+        self.unit_system = unit_system.UnitSystem(
+            time=unit_system.UnitTime("Seconds"),
+            temperature=unit_system.UnitTemp("Kelvin"),
+            stress=unit_system.UnitStress("MPa"),
+        )
         self.a1 = 9.81e22
         self.n1 = 5.5
         self.q1divr = 12589.0
@@ -20,13 +28,16 @@ class MdModel:
         self.beta = -7.738
         self.delta = 0.58
         self.mu = 12400.0
-
         self.convert_usys(usys)
-
         self.unit_system = usys
         return
 
     def set_hard_salt(self, usys: unit_system.UnitSystem):
+        self.unit_system = unit_system.UnitSystem(
+            time=unit_system.UnitTime("Seconds"),
+            temperature=unit_system.UnitTemp("Kelvin"),
+            stress=unit_system.UnitStress("MPa"),
+        )
         self.a1 = 1.445e22
         self.n1 = 5.5
         self.q1divr = 12589.0
@@ -177,10 +188,12 @@ class MdModel:
         return
 
     def convert_stress_usys(self, to_unit: unit_system.UnitStress):
-        self.sig0 = unit_system.convert_stress_to_base(self.sig0, self.unit_system.time)
+        self.sig0 = unit_system.convert_stress_to_base(
+            self.sig0, self.unit_system.stress
+        )
         self.sig0 = unit_system.convert_stress_from_base(self.sig0, to_unit)
 
-        self.mu = unit_system.convert_stress_to_base(self.mu, self.unit_system.time)
+        self.mu = unit_system.convert_stress_to_base(self.mu, self.unit_system.stress)
         self.mu = unit_system.convert_stress_from_base(self.mu, to_unit)
         return
 
@@ -190,10 +203,10 @@ class MdModel:
         )
         self.q1divr = unit_system.convert_temp_from_base(self.q1divr, to_unit)
 
-        self.g2divr = unit_system.convert_temp_to_base(
-            self.g2divr, self.unit_system.temperature
+        self.q2divr = unit_system.convert_temp_to_base(
+            self.q2divr, self.unit_system.temperature
         )
-        self.g2divr = unit_system.convert_temp_from_base(self.g2divr, to_unit)
+        self.q2divr = unit_system.convert_temp_from_base(self.q2divr, to_unit)
         return
 
     def convert_invtemp_usys(self, to_unit: unit_system.UnitTemp):
