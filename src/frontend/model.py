@@ -3,6 +3,7 @@ from PyQt5 import QtCore as qtc
 
 from .modules import data_classes
 from .modules import unit_system
+from .modules import mdmodel
 
 
 class Model(qtc.QObject):
@@ -12,6 +13,9 @@ class Model(qtc.QObject):
     signal_error = qtc.pyqtSignal(str)
     signal_send_test = qtc.pyqtSignal(data_classes.Test)
     signal_send_testsuite = qtc.pyqtSignal(data_classes.TestSuite)
+    signal_lf_fitlist_changed = qtc.pyqtSignal(list)
+    signal_send_localfit_name_list = qtc.pyqtSignal(list)
+    signal_send_mdmodel = qtc.pyqtSignal(mdmodel.MdModel)
 
     def __init__(self):
         super().__init__()
@@ -172,3 +176,36 @@ class Model(qtc.QObject):
             print(self.test_suite.test_list[0].stress)
         else:
             print("No tests.")
+
+    def add_localfit(self, test_index: int, localfit: data_classes.LocalFit):
+        # Validate Local Fit Name
+        # Need to make sure the name is not already in the local fit list
+        current_names = self.test_suite.test_list[test_index].get_localfit_names()
+
+        if localfit.name in current_names:
+            self.signal_error.emit("Local Fit with this name already exists.")
+        elif localfit.name == "":
+            self.signal_error.emit("Name of Local Fit cannot be an empty string.")
+        else:
+            self.test_suite.test_list[test_index].add_localfit(localfit)
+            self.signal_lf_fitlist_changed.emit(
+                self.test_suite.test_list[test_index].get_localfit_names()
+            )
+
+        print("Num_localfits: ", self.test_suite.test_list[test_index].num_localfits)
+
+        return
+
+    def send_localfit_name_list(self, test_index: int):
+        self.signal_send_localfit_name_list.emit(
+            self.test_suite.test_list[test_index].get_localfit_names()
+        )
+        return
+
+    def send_localfit_mdmodel(self, test_index: int, fit_index: int):
+        if test_index == -1 or fit_index == -1:
+            pass
+        else:
+            self.signal_send_mdmodel.emit(
+                self.test_suite.test_list[test_index].localfit_list[fit_index].mdmodel
+            )

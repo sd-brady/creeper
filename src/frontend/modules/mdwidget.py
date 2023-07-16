@@ -241,15 +241,15 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.lineedit_widget_list[i].clear()
         return
 
-    def validate_form(self) -> bool:
+    def validate(self) -> bool:
         for i in range(len(self.value_widget_list)):
-            if self.value_widget_list.text() == "":
+            if self.value_widget_list[i].text() == "":
                 return False
         return True
 
     def get_table_mdmodel(self, usys: unit_system.UnitSystem):
         table_mdmodel = mdmodel.MdModel()
-        table_mdmodel = table_mdmodel.set_custom_vals_units(
+        table_mdmodel.set_custom_vals_units(
             a1=float(self.a1_value.text()),
             n1=float(self.n1_value.text()),
             q1divr=float(self.q1divr_value.text()),
@@ -267,8 +267,9 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             beta=float(self.beta_value.text()),
             delta=float(self.delta_value.text()),
             mu=float(self.mu_value.text()),
-            unit_system=usys,
+            usys=usys,
         )
+        print(table_mdmodel.a1)
         return table_mdmodel
 
     def convert_usys(self, to_unit: unit_system.UnitSystem):

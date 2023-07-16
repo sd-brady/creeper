@@ -72,6 +72,26 @@ class MainWindow(qtw.QMainWindow):
         self.ui.button_lf_cleartable.clicked.connect(
             self.ui.localfit_mdwidget.clear_table
         )
+
+        self.ui.button_lf_newfit.clicked.connect(self.view.add_localfit)
+        self.view.signal_localfit_added.connect(self.model.add_localfit)
+        self.model.signal_lf_fitlist_changed.connect(self.view.lf_fitlist_changed)
+
+        self.ui.list_lf_testlist.currentRowChanged.connect(
+            self.view.request_localfit_name_list
+        )
+        self.view.signal_request_localfit_list.connect(
+            self.model.send_localfit_name_list
+        )
+        self.model.signal_send_localfit_name_list.connect(self.view.update_lf_fitlist)
+
+        self.ui.list_lf_fitlist.currentRowChanged.connect(
+            self.view.lf_fitlist_selection_changed
+        )
+        self.view.signal_request_localfit_mdmodel.connect(
+            self.model.send_localfit_mdmodel
+        )
+        self.model.signal_send_mdmodel.connect(self.view.update_mdwidget_mdmodel)
         return
 
     def messagebox_error(self, message):

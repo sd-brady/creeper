@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1202</width>
-    <height>1023</height>
+    <height>921</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -541,7 +541,7 @@
              <property name="minimumSize">
               <size>
                <width>400</width>
-               <height>600</height>
+               <height>500</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -611,29 +611,18 @@
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <widget class="QPushButton" name="pushButton_8">
-                  <property name="text">
-                   <string>Run Curve Fit</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="2" column="0">
-                 <widget class="QPushButton" name="button_lf_savefit">
+                 <widget class="QPushButton" name="button_lf_newfit">
                   <property name="text">
-                   <string>Save Current Fit</string>
+                   <string>New Local Fit</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
-                 <widget class="QPushButton" name="button_lf_edit_fitname">
+                <item row="4" column="1">
+                 <widget class="QPushButton" name="button_lf_make_fit_primary">
                   <property name="text">
-                   <string>Edit Selected Fit Name</string>
+                   <string>Make Selected Fit Primary</string>
                   </property>
                  </widget>
                 </item>
@@ -671,6 +660,20 @@
                   </property>
                  </widget>
                 </item>
+                <item row="3" column="1">
+                 <widget class="QPushButton" name="button_lf_edit_fitname">
+                  <property name="text">
+                   <string>Edit Selected Fit Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QPushButton" name="button_lf_savefit">
+                  <property name="text">
+                   <string>Save Current Fit</string>
+                  </property>
+                 </widget>
+                </item>
                 <item row="3" column="0">
                  <widget class="QPushButton" name="button_lf_deletefit">
                   <property name="text">
@@ -678,10 +681,10 @@
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="1">
-                 <widget class="QPushButton" name="button_lf_make_fit_primary">
+                <item row="4" column="0">
+                 <widget class="QPushButton" name="button_lf_runfit">
                   <property name="text">
-                   <string>Make Selected Fit Primary</string>
+                   <string>Run Curve Fit</string>
                   </property>
                  </widget>
                 </item>

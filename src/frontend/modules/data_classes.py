@@ -2,6 +2,7 @@ from enum import Enum
 
 
 from .unit_system import UnitSystem
+from .mdmodel import MdModel
 
 
 class PlotType(Enum):
@@ -58,8 +59,10 @@ class TestData:
         return
 
 
-class LocalFits:
-    def __init__(self):
+class LocalFit:
+    def __init__(self, mdmodel: MdModel, name: str):
+        self.mdmodel = mdmodel
+        self.name = name
         return
 
 
@@ -71,7 +74,6 @@ class Test:
         color: PlotColors,
         active_state: ActiveState,
         test_data: TestData,
-        local_fits: LocalFits,
     ):
         # Stores the Name of the Test
         self.name = name
@@ -89,10 +91,28 @@ class Test:
         #   [stress_unit]
         self.test_data = test_data
 
-        # Stores the local creep fits for the individual creep test
-        self.local_fits = local_fits
+        # Initialize the local fits list
+        self.localfit_list = []
+        self.num_localfits = 0
 
         return
+
+    def add_localfit(self, fit: LocalFit):
+        self.localfit_list.append(fit)
+        self.num_localfits += 1
+        return
+
+    def delete_localfit(self, localfit_index):
+        self.localfit_list.pop(localfit_index)
+        self.num_localfits -= 1
+        return
+
+    def get_localfit_names(self):
+        names = []
+        for i in range(self.num_localfits):
+            names.append(self.localfit_list[i].name)
+
+        return names
 
 
 class TestSuite:

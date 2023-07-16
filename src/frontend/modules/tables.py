@@ -435,146 +435,30 @@ class EditTestDialog(qtw.QDialog):
         return data_classes.ActiveState(self.combo_active.currentText())
 
 
-class MdTableModel(qtc.QAbstractTableModel):
-    def __init__(self):
-        super().__init__()
+class NewLocalFitDialog(qtw.QDialog):
+    def __init__(
+        self,
+        name: str,
+        parent=None,
+    ):
+        super().__init__(parent)
 
-        self._headers = [
-            "Testing",
-        ]
+        layout = qtw.QFormLayout(self)
 
-        self._headerkeys = [
-            "testing",
-        ]
+        self.inputs = []
 
-        self.num_rows = 16
-        self.new_data()
+        # QLineEdit for Test Name
+        self.lineedit_fitname = qtw.QLineEdit(self, text=name)
+        layout.addRow("Fit Name", self.lineedit_fitname)
+
+        buttonBox = qtw.QDialogButtonBox(
+            qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
+        )
+        layout.addWidget(buttonBox)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
 
         return
 
-    def new_data(self):
-        data = []
-        for _ in range(len(self._headers)):
-            data.append([""] * self.num_rows)
-
-        self._data = data
-
-        self.dataChanged.emit(
-            qtc.QModelIndex(self.index(0, 0)),
-            qtc.QModelIndex(self.index(len(self._headerkeys), self.num_rows)),
-            [qtc.Qt.DisplayRole],  # type: ignore
-        )
-
-        return
-
-    def clear_data(self):
-        self.new_data()
-        return
-
-    def rowCount(self, parent):
-        return self.num_rows
-
-    def columnCount(self, parent):
-        return len(self._headers)
-
-    def data(self, index, role):
-        if role in (qtc.Qt.DisplayRole, qtc.Qt.EditRole):  # type: ignore
-            return self._data[index.column()][index.row()]
-
-    def headerData(self, section, orientation, role):
-        if (
-            orientation == qtc.Qt.Horizontal  # type: ignore
-            and role == qtc.Qt.DisplayRole  # type: ignore
-        ):
-            return self._headers[section]
-        else:
-            return super().headerData(section, orientation, role)
-
-    def setData(self, index, value, role):
-        if index.isValid() and role == qtc.Qt.EditRole:  # type: ignore
-            self._data[index.column()][index.row()] = value
-            self.dataChanged.emit(index, index, [role])
-            return True
-        else:
-            return False
-
-    def flags(self, index):
-        return super().flags(index)
-
-    def refresh(self):
-        self.dataChanged.emit(
-            qtc.QModelIndex(self.index(0, 0)),
-            qtc.QModelIndex(
-                self.index(self.rowCount(None) - 1, self.columnCount(None) - 1)
-            ),
-        )
-        self.layoutChanged.emit()
-        return
-
-
-class CheckBoxDelegateQt(qtw.QStyledItemDelegate):
-    """Delegate for editing bool values via a checkbox with no label centered in its cell.
-    Does not actually create a QCheckBox, but instead overrides the paint() method to draw the checkbox directly.
-    Mouse events are handled by the editorEvent() method which updates the model's bool value.
-    """
-
-    def __init__(self, parent=None):
-        qtw.QStyledItemDelegate.__init__(self, parent)
-
-    def createEditor(self, parent, option, index):
-        """Important, otherwise an editor is created if the user clicks in this cell."""
-        return None
-
-    def paint(self, painter, option, index):
-        """Paint a checkbox without the label."""
-        checked = bool(index.model().data(index, qtc.Qt.DisplayRole))
-        opts = qtw.QStyleOptionButton()
-        opts.state |= qtw.QStyle.State_Active
-        if index.flags() & qtc.Qt.ItemIsEditable:
-            opts.state |= qtw.QStyle.State_Enabled
-        else:
-            opts.state |= qtw.QStyle.State_ReadOnly
-        if checked:
-            opts.state |= qtw.QStyle.State_On
-        else:
-            opts.state |= qtw.QStyle.State_Off
-        opts.rect = self.getCheckBoxRect(option)
-        qtw.QApplication.style().drawControl(qtw.QStyle.CE_CheckBox, opts, painter)
-
-    def editorEvent(self, event, model, option, index):
-        """Change the data in the model and the state of the checkbox if the
-        user presses the left mouse button and this cell is editable. Otherwise do nothing.
-        """
-        if not (index.flags() & qtc.Qt.ItemIsEditable):
-            return False
-        if event.button() == qtc.Qt.LeftButton:
-            if event.type() == qtc.QEvent.MouseButtonRelease:
-                if self.getCheckBoxRect(option).contains(event.pos()):
-                    self.setModelData(None, model, index)
-                    return True
-            elif event.type() == qtc.QEvent.MouseButtonDblClick:
-                if self.getCheckBoxRect(option).contains(event.pos()):
-                    return True
-        return False
-
-    def setModelData(self, editor, model, index):
-        """Toggle the boolean state in the model."""
-        checked = not bool(index.model().data(index, qtc.Qt.DisplayRole))
-        model.setData(index, checked, qtc.Qt.EditRole)
-
-    def getCheckBoxRect(self, option):
-        """Get rect for checkbox centered in option.rect."""
-        # Get size of a standard checkbox.
-        opts = qtw.QStyleOptionButton()
-        checkBoxRect = qtw.QApplication.style().subElementRect(
-            qtw.QStyle.SE_CheckBoxIndicator, opts, None
-        )
-        # Center checkbox in option.rect.
-        x = option.rect.x()
-        y = option.rect.y()
-        w = option.rect.width()
-        h = option.rect.height()
-        checkBoxTopLeftCorner = qtc.QPoint(
-            x + w / 2 - checkBoxRect.width() / 2, y + h / 2 - checkBoxRect.height() / 2
-        )
-        return qtc.QRect(checkBoxTopLeftCorner, checkBoxRect.size())
+    def get_name(self) -> str:
+        return self.lineedit_fitname.text()

@@ -21,6 +21,10 @@ class View(qtw.QWidget):
     signal_test_move_up = qtc.pyqtSignal(int)
     signal_test_move_down = qtc.pyqtSignal(int)
     signal_gui_units_changed = qtc.pyqtSignal()
+    signal_localfit_added = qtc.pyqtSignal(int, data_classes.LocalFit)
+    signal_request_localfit = qtc.pyqtSignal(int, int)
+    signal_request_localfit_list = qtc.pyqtSignal(int)
+    signal_request_localfit_mdmodel = qtc.pyqtSignal(int, int)
 
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
@@ -208,14 +212,12 @@ class View(qtw.QWidget):
                 )
 
                 # Initialize Local Fit Class for the Test
-                local_fits = data_classes.LocalFits()
                 test = data_classes.Test(
                     name=test_name,
                     stress=app_stress,
                     color=plot_color,
                     active_state=active_state,
                     test_data=test_data,
-                    local_fits=local_fits,
                 )
                 self.signal_test_added.emit(test, test_unit_system)
 
@@ -263,6 +265,19 @@ class View(qtw.QWidget):
             item = qtw.QListWidgetItem(item_text)
             item.setTextAlignment(qtc.Qt.AlignHCenter)
             self._ui.list_lf_testlist.addItem(item)
+
+        return
+
+    def lf_fitlist_changed(self, name_list: list[str]):
+        # Clear the MdWidget
+        self._ui.localfit_mdwidget.clear_table()
+
+        # Add the name_list to the fit list QListWidget
+        self._ui.list_lf_fitlist.clear()
+        for item_text in name_list:
+            item = qtw.QListWidgetItem(item_text)
+            item.setTextAlignment(qtc.Qt.AlignHCenter)
+            self._ui.list_lf_fitlist.addItem(item)
 
         return
 
@@ -414,4 +429,64 @@ class View(qtw.QWidget):
         hardsalt_model = mdmodel.MdModel()
         hardsalt_model.set_hard_salt(self.get_gui_unit_system())
         self._ui.localfit_mdwidget.place_mdmodel(hardsalt_model)
+        return
+
+    def add_localfit(self):
+        # get the index of the selected test
+        row = self._ui.list_lf_testlist.currentRow()
+        print("Current Row: ", row)
+        if row == -1:
+            print("No test selected.")
+            pass
+        elif self._ui.localfit_mdwidget.validate():
+            gui_usys = self.get_gui_unit_system()
+            md_model = self._ui.localfit_mdwidget.get_table_mdmodel(gui_usys)
+            md_model.convert_usys_to_base()
+
+            dialog = tables.NewLocalFitDialog(name="")
+            if dialog.exec():
+                fit_name = dialog.get_name()
+            else:
+                fit_name = ""
+
+            localfit = data_classes.LocalFit(mdmodel=md_model, name=fit_name)
+            self.signal_localfit_added.emit(row, localfit)
+        else:
+            print("Invalid User Input.")
+            pass
+
+        return
+
+    def lf_fitlist_selection_changed(self, fit_index: int):
+        print("Fit index: ", fit_index)
+        # Get the selected test from the testlist QListWidget
+        test_index = self._ui.list_lf_testlist.currentRow()
+        print("Test Index: ", test_index)
+
+        # Request the mdmodel from the localfit class in the model
+        self.signal_request_localfit_mdmodel.emit(test_index, fit_index)
+        return
+
+    def request_localfit_name_list(self, test_index: int):
+        self.signal_request_localfit_list.emit(test_index)
+        return
+
+    def update_lf_fitlist(self, name_list: list):
+        self._ui.list_lf_fitlist.clear()
+        for name in name_list:
+            item = qtw.QListWidgetItem(name)
+            item.setTextAlignment(qtc.Qt.AlignHCenter)
+            self._ui.list_lf_fitlist.addItem(item)
+        return
+
+    def update_mdwidget_mdmodel(self, md_model: mdmodel.MdModel):
+        # Get the gui unitsystem
+        gui_usys = self.get_gui_unit_system()
+
+        # Convert the mdmodel to gui units
+        md_model.convert_usys(gui_usys)
+
+        # Place the mdmodel in the mdwidget
+        self._ui.localfit_mdwidget.place_mdmodel(md_model)
+
         return
