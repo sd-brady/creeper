@@ -220,4 +220,50 @@ class Model(qtc.QObject):
         self.signal_send_localfit_name_list.emit(
             deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
         )
+        # If the test is
         return
+
+    def edit_localfit_name(self, test_index: int, fit_index: int, name: str):
+        # Make sure that the name isn't empty
+        if name == "":
+            self.signal_error.emit("Fit Name cannot be an empty string.")
+        elif name in self.test_suite.test_list[test_index].get_localfit_names():
+            self.signal_error.emit("Fit Name already exists for the current test.")
+        else:
+            self.test_suite.test_list[test_index].localfit_list[fit_index].name = name
+            self.signal_send_localfit_name_list.emit(
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+            )
+        return
+
+    def change_localfit_primary(self, test_index, fit_index):
+        print("We're in!")
+        current_primary = self.get_current_primary_localfit(
+            self.test_suite.test_list[test_index]
+        )
+        if current_primary == -1:
+            pass
+        else:
+            # Demote the current primary
+            self.test_suite.test_list[test_index].localfit_list[
+                current_primary
+            ].demote_primary()
+
+        # Promote the new primary
+        self.test_suite.test_list[test_index].localfit_list[fit_index].promote_primary()
+
+        self.signal_send_localfit_name_list.emit(
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+        )
+
+        return
+
+    @staticmethod
+    def get_current_primary_localfit(test: data_classes.Test):
+        index = -1
+        for i in range(test.num_localfits):
+            if test.localfit_list[i].primary is True:
+                index = i
+            else:
+                pass
+        return index

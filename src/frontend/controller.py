@@ -96,6 +96,19 @@ class MainWindow(qtw.QMainWindow):
         # Set up the signals to delete a local fit from a test.
         self.ui.button_lf_deletefit.clicked.connect(self.view.delete_lf_localfit)
         self.view.signal_delete_localfit.connect(self.model.delete_localfit)
+
+        # Set up the signals to edit a the name of a local fit
+        self.ui.button_lf_edit_fitname.clicked.connect(self.view.edit_lf_localfit_name)
+        self.view.signal_edit_localfit_name.connect(self.model.edit_localfit_name)
+
+        # Set up the signals to make a localfit primary
+        self.ui.button_lf_make_fit_primary.clicked.connect(
+            self.view.make_localfit_primary
+        )
+        self.view.signal_make_localfit_primary.connect(
+            self.model.change_localfit_primary
+        )
+
         return
 
     def messagebox_error(self, message):

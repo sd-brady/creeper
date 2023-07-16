@@ -26,6 +26,8 @@ class View(qtw.QWidget):
     signal_request_localfit_list = qtc.pyqtSignal(int)
     signal_request_localfit_mdmodel = qtc.pyqtSignal(int, int)
     signal_delete_localfit = qtc.pyqtSignal(int, int)
+    signal_edit_localfit_name = qtc.pyqtSignal(int, int, str)
+    signal_make_localfit_primary = qtc.pyqtSignal(int, int)
 
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
@@ -444,7 +446,7 @@ class View(qtw.QWidget):
             md_model = self._ui.localfit_mdwidget.get_table_mdmodel(gui_usys)
             md_model.convert_usys_to_base()
 
-            dialog = tables.NewLocalFitDialog(name="")
+            dialog = tables.LocalFitNameDialog(name="")
             if dialog.exec():
                 fit_name = dialog.get_name()
             else:
@@ -477,7 +479,6 @@ class View(qtw.QWidget):
             item.setTextAlignment(qtc.Qt.AlignHCenter)
             self._ui.list_lf_fitlist.addItem(item)
         self._ui.list_lf_fitlist.setCurrentRow(-1)
-        print("Current Row: ", self._ui.list_lf_fitlist.currentRow())
         return
 
     def update_mdwidget_mdmodel(self, md_model: mdmodel.MdModel):
@@ -499,12 +500,41 @@ class View(qtw.QWidget):
         # Get the selected row in the localfit fitlist QListWidget
         fit_index = self._ui.list_lf_fitlist.currentRow()
 
-        print("Test Index: ", test_index)
-        print("Fit Index: ", fit_index)
-
         if test_index == -1 or fit_index == -1:
             pass
         else:
             self.signal_delete_localfit.emit(test_index, fit_index)
+
+        return
+
+    def edit_lf_localfit_name(self):
+        # Get the selected test on the list_lf_testlist widget
+        test_index = self._ui.list_lf_testlist.currentRow()
+        # Get the selected fit on the list_lf_fitlist widget
+        fit_index = self._ui.list_lf_fitlist.currentRow()
+
+        if test_index == -1 or fit_index == -1:
+            pass
+        else:
+            current_name = self._ui.list_lf_fitlist.currentItem().text()
+            dialog = tables.LocalFitNameDialog(name=current_name)
+            if dialog.exec():
+                new_name = dialog.get_name()
+            else:
+                new_name = ""
+            self.signal_edit_localfit_name.emit(test_index, fit_index, new_name)
+
+        return
+
+    def make_localfit_primary(self):
+        # Get the selected test on the list_lf_testlist widget
+        test_index = self._ui.list_lf_testlist.currentRow()
+        # Get the selected fit on the list_lf_fitlist widget
+        fit_index = self._ui.list_lf_fitlist.currentRow()
+
+        if test_index == -1 or fit_index == -1:
+            pass
+        else:
+            self.signal_make_localfit_primary.emit(test_index, fit_index)
 
         return

@@ -435,7 +435,7 @@ class EditTestDialog(qtw.QDialog):
         return data_classes.ActiveState(self.combo_active.currentText())
 
 
-class NewLocalFitDialog(qtw.QDialog):
+class LocalFitNameDialog(qtw.QDialog):
     def __init__(
         self,
         name: str,

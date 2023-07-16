@@ -63,6 +63,19 @@ class LocalFit:
     def __init__(self, mdmodel: MdModel, name: str):
         self.mdmodel = mdmodel
         self.name = name
+        self.primary = False
+        return
+
+    def promote_primary(self):
+        print("Before Name: ", self.name)
+        self.primary = True
+        self.name = "* " + self.name + " *"
+        print("After Name: ", self.name)
+        return
+
+    def demote_primary(self):
+        self.primary = False
+        self.name = self.name[2:-2]
         return
 
 
