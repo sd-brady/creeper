@@ -109,6 +109,9 @@ class MainWindow(qtw.QMainWindow):
             self.model.change_localfit_primary
         )
 
+        # Set up the signals to save a localfit
+        self.ui.button_lf_savefit.clicked.connect(self.view.save_localfit)
+        self.view.signal_save_localfit.connect(self.model.save_localfit)
         return
 
     def messagebox_error(self, message):

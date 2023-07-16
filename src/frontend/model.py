@@ -267,3 +267,9 @@ class Model(qtc.QObject):
             else:
                 pass
         return index
+
+    def save_localfit(self, test_index, fit_index, md_model: mdmodel.MdModel):
+        self.test_suite.test_list[test_index].localfit_list[
+            fit_index
+        ].mdmodel = md_model
+        return

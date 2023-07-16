@@ -28,10 +28,7 @@ class View(qtw.QWidget):
     signal_delete_localfit = qtc.pyqtSignal(int, int)
     signal_edit_localfit_name = qtc.pyqtSignal(int, int, str)
     signal_make_localfit_primary = qtc.pyqtSignal(int, int)
-
-    # Signals for the Test Suite Tab. Arg1 is the test index to edit
-    #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
-    #   Arg5 is the active status
+    signal_save_localfit = qtc.pyqtSignal(int, int, mdmodel.MdModel)
     signal_edit_test = qtc.pyqtSignal(
         int, str, str, data_classes.PlotColors, data_classes.ActiveState
     )
@@ -538,3 +535,26 @@ class View(qtw.QWidget):
             self.signal_make_localfit_primary.emit(test_index, fit_index)
 
         return
+
+    def save_localfit(self):
+        # Get the selected test on the list_lf_testlist widget
+        test_index = self._ui.list_lf_testlist.currentRow()
+        # Get the selected fit on the list_lf_fitlist widget
+        fit_index = self._ui.list_lf_fitlist.currentRow()
+
+        if test_index == -1 or fit_index == -1:
+            pass
+        elif self._ui.localfit_mdwidget.validate:
+            # Get the gui usys
+            gui_usys = self.get_gui_unit_system()
+
+            # Get an mdmodel from the mdwidget
+            md_model = self._ui.localfit_mdwidget.get_table_mdmodel(usys=gui_usys)
+
+            # Convert the mdmodel to base units
+            md_model.convert_usys_to_base()
+
+            # Send the md_model to the model
+            self.signal_save_localfit.emit(test_index, fit_index, md_model)
+        else:
+            print("Invalid User Input.")
