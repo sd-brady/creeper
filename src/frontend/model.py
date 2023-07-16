@@ -189,7 +189,7 @@ class Model(qtc.QObject):
         else:
             self.test_suite.test_list[test_index].add_localfit(localfit)
             self.signal_lf_fitlist_changed.emit(
-                self.test_suite.test_list[test_index].get_localfit_names()
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
             )
 
         print("Num_localfits: ", self.test_suite.test_list[test_index].num_localfits)
@@ -198,7 +198,7 @@ class Model(qtc.QObject):
 
     def send_localfit_name_list(self, test_index: int):
         self.signal_send_localfit_name_list.emit(
-            self.test_suite.test_list[test_index].get_localfit_names()
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
         )
         return
 
@@ -207,5 +207,17 @@ class Model(qtc.QObject):
             pass
         else:
             self.signal_send_mdmodel.emit(
-                self.test_suite.test_list[test_index].localfit_list[fit_index].mdmodel
+                deepcopy(
+                    self.test_suite.test_list[test_index]
+                    .localfit_list[fit_index]
+                    .mdmodel
+                )
             )
+        return
+
+    def delete_localfit(self, test_index, fit_index):
+        self.test_suite.test_list[test_index].delete_localfit(fit_index)
+        self.signal_send_localfit_name_list.emit(
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+        )
+        return

@@ -25,6 +25,7 @@ class View(qtw.QWidget):
     signal_request_localfit = qtc.pyqtSignal(int, int)
     signal_request_localfit_list = qtc.pyqtSignal(int)
     signal_request_localfit_mdmodel = qtc.pyqtSignal(int, int)
+    signal_delete_localfit = qtc.pyqtSignal(int, int)
 
     # Signals for the Test Suite Tab. Arg1 is the test index to edit
     #   Arg2 is the test name, Arg3 is the stress, Arg4 is the color,
@@ -458,10 +459,8 @@ class View(qtw.QWidget):
         return
 
     def lf_fitlist_selection_changed(self, fit_index: int):
-        print("Fit index: ", fit_index)
         # Get the selected test from the testlist QListWidget
         test_index = self._ui.list_lf_testlist.currentRow()
-        print("Test Index: ", test_index)
 
         # Request the mdmodel from the localfit class in the model
         self.signal_request_localfit_mdmodel.emit(test_index, fit_index)
@@ -477,6 +476,8 @@ class View(qtw.QWidget):
             item = qtw.QListWidgetItem(name)
             item.setTextAlignment(qtc.Qt.AlignHCenter)
             self._ui.list_lf_fitlist.addItem(item)
+        self._ui.list_lf_fitlist.setCurrentRow(-1)
+        print("Current Row: ", self._ui.list_lf_fitlist.currentRow())
         return
 
     def update_mdwidget_mdmodel(self, md_model: mdmodel.MdModel):
@@ -488,5 +489,22 @@ class View(qtw.QWidget):
 
         # Place the mdmodel in the mdwidget
         self._ui.localfit_mdwidget.place_mdmodel(md_model)
+
+        return
+
+    def delete_lf_localfit(self):
+        # Get the selected test in the localfit testlist QListWidget
+        test_index = self._ui.list_lf_testlist.currentRow()
+
+        # Get the selected row in the localfit fitlist QListWidget
+        fit_index = self._ui.list_lf_fitlist.currentRow()
+
+        print("Test Index: ", test_index)
+        print("Fit Index: ", fit_index)
+
+        if test_index == -1 or fit_index == -1:
+            pass
+        else:
+            self.signal_delete_localfit.emit(test_index, fit_index)
 
         return
