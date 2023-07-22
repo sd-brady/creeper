@@ -198,6 +198,7 @@ class View(qtw.QWidget):
             # Get the test name from the user
             dialog = tables.AddTestDialog()
             if dialog.exec():
+                print("Dialog result: ", dialog.result())
                 test_name = dialog.get_name()
                 app_stress = dialog.get_stress()
                 plot_color = dialog.get_color()
@@ -348,14 +349,15 @@ class View(qtw.QWidget):
 
             dialog = tables.EditTestDialog(cur_name, cur_stress, cur_color, cur_active)
             if dialog.exec():
+                print("Dialog result: ", dialog.result())
                 new_name = dialog.get_name()
                 new_stress = dialog.get_stress()
                 new_color = dialog.get_color()
                 new_active = dialog.get_active_state()
 
-            self.signal_edit_test.emit(
-                test_index, new_name, new_stress, new_color, new_active
-            )
+                self.signal_edit_test.emit(
+                    test_index, new_name, new_stress, new_color, new_active
+                )
         return
 
     def get_gui_unit_system(self):

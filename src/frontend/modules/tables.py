@@ -295,6 +295,8 @@ class AddTestDialog(qtw.QDialog):
 
         self.inputs = []
 
+        self.setWindowTitle("Test Information")
+
         # ---- Rows are as follows
         # 0) Test Name (QLineEdit)
         # 1) Time Unit (QCombobox)
@@ -387,6 +389,8 @@ class EditTestDialog(qtw.QDialog):
     ):
         super().__init__(parent)
 
+        self.setWindowTitle("Edit Test Information")
+
         layout = qtw.QFormLayout(self)
 
         self.inputs = []
@@ -442,6 +446,7 @@ class LocalFitNameDialog(qtw.QDialog):
         parent=None,
     ):
         super().__init__(parent)
+        self.setWindowTitle("Set Fit Name")
 
         layout = qtw.QFormLayout(self)
 
