@@ -295,6 +295,8 @@ class AddTestDialog(qtw.QDialog):
 
         self.inputs = []
 
+        self.setWindowTitle("Test Information")
+
         # ---- Rows are as follows
         # 0) Test Name (QLineEdit)
         # 1) Time Unit (QCombobox)
@@ -387,6 +389,8 @@ class EditTestDialog(qtw.QDialog):
     ):
         super().__init__(parent)
 
+        self.setWindowTitle("Edit Test Information")
+
         layout = qtw.QFormLayout(self)
 
         self.inputs = []
@@ -433,3 +437,33 @@ class EditTestDialog(qtw.QDialog):
 
     def get_active_state(self) -> data_classes.ActiveState:
         return data_classes.ActiveState(self.combo_active.currentText())
+
+
+class LocalFitNameDialog(qtw.QDialog):
+    def __init__(
+        self,
+        name: str,
+        parent=None,
+    ):
+        super().__init__(parent)
+        self.setWindowTitle("Set Fit Name")
+
+        layout = qtw.QFormLayout(self)
+
+        self.inputs = []
+
+        # QLineEdit for Test Name
+        self.lineedit_fitname = qtw.QLineEdit(self, text=name)
+        layout.addRow("Fit Name", self.lineedit_fitname)
+
+        buttonBox = qtw.QDialogButtonBox(
+            qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
+        )
+        layout.addWidget(buttonBox)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        return
+
+    def get_name(self) -> str:
+        return self.lineedit_fitname.text()

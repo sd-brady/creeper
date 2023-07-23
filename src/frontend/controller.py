@@ -67,6 +67,51 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_test_move_down.connect(self.model.move_test_down)
         self.ui.button_ts_movedown.clicked.connect(self.view.ts_move_down)
 
+        self.ui.button_lf_softsalt.clicked.connect(self.view.localfit_place_softsalt)
+        self.ui.button_lf_hardsalt.clicked.connect(self.view.localfit_place_hardsalt)
+        self.ui.button_lf_cleartable.clicked.connect(
+            self.ui.localfit_mdwidget.clear_table
+        )
+
+        self.ui.button_lf_newfit.clicked.connect(self.view.add_localfit)
+        self.view.signal_localfit_added.connect(self.model.add_localfit)
+        self.model.signal_lf_fitlist_changed.connect(self.view.lf_fitlist_changed)
+
+        self.ui.list_lf_testlist.currentRowChanged.connect(
+            self.view.request_localfit_name_list
+        )
+        self.view.signal_request_localfit_list.connect(
+            self.model.send_localfit_name_list
+        )
+        self.model.signal_send_localfit_name_list.connect(self.view.update_lf_fitlist)
+
+        self.ui.list_lf_fitlist.currentRowChanged.connect(
+            self.view.lf_fitlist_selection_changed
+        )
+        self.view.signal_request_localfit_mdmodel.connect(
+            self.model.send_localfit_mdmodel
+        )
+        self.model.signal_send_mdtablemodel.connect(self.view.update_mdwidget_mdmodel)
+
+        # Set up the signals to delete a local fit from a test.
+        self.ui.button_lf_deletefit.clicked.connect(self.view.delete_lf_localfit)
+        self.view.signal_delete_localfit.connect(self.model.delete_localfit)
+
+        # Set up the signals to edit a the name of a local fit
+        self.ui.button_lf_edit_fitname.clicked.connect(self.view.edit_lf_localfit_name)
+        self.view.signal_edit_localfit_name.connect(self.model.edit_localfit_name)
+
+        # Set up the signals to make a localfit primary
+        self.ui.button_lf_make_fit_primary.clicked.connect(
+            self.view.make_localfit_primary
+        )
+        self.view.signal_make_localfit_primary.connect(
+            self.model.change_localfit_primary
+        )
+
+        # Set up the signals to save a localfit
+        self.ui.button_lf_savefit.clicked.connect(self.view.save_localfit)
+        self.view.signal_save_localfit.connect(self.model.save_localfit)
         return
 
     def messagebox_error(self, message):

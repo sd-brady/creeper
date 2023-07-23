@@ -3,6 +3,7 @@ from PyQt5 import QtCore as qtc
 
 from .modules import data_classes
 from .modules import unit_system
+from .modules import mdmodel
 
 
 class Model(qtc.QObject):
@@ -12,6 +13,9 @@ class Model(qtc.QObject):
     signal_error = qtc.pyqtSignal(str)
     signal_send_test = qtc.pyqtSignal(data_classes.Test)
     signal_send_testsuite = qtc.pyqtSignal(data_classes.TestSuite)
+    signal_lf_fitlist_changed = qtc.pyqtSignal(int, list)
+    signal_send_localfit_name_list = qtc.pyqtSignal(int, list)
+    signal_send_mdtablemodel = qtc.pyqtSignal(mdmodel.MdTableModel)
 
     def __init__(self):
         super().__init__()
@@ -172,3 +176,133 @@ class Model(qtc.QObject):
             print(self.test_suite.test_list[0].stress)
         else:
             print("No tests.")
+
+    def add_localfit(self, test_index: int, localfit: data_classes.LocalFit):
+        # Validate Local Fit Name
+        # Need to make sure the name is not already in the local fit list
+        current_names = self.test_suite.test_list[test_index].get_localfit_names()
+
+        if localfit.name in current_names:
+            self.signal_error.emit("Local Fit with this name already exists.")
+        elif localfit.name == "":
+            self.signal_error.emit("Name of Local Fit cannot be an empty string.")
+        else:
+            self.test_suite.test_list[test_index].add_localfit(localfit)
+
+            # Get the index of the primary fit
+            primary_index = self.get_current_primary_localfit(
+                self.test_suite.test_list[test_index]
+            )
+
+            self.signal_lf_fitlist_changed.emit(
+                primary_index,
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+            )
+
+        return
+
+    def send_localfit_name_list(self, test_index: int, fit_index: int):
+        self.signal_send_localfit_name_list.emit(
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+        )
+        return
+
+    def send_localfit_mdmodel(self, test_index: int, fit_index: int):
+        if test_index == -1 or fit_index == -1:
+            pass
+        else:
+            self.signal_send_mdtablemodel.emit(
+                deepcopy(
+                    self.test_suite.test_list[test_index]
+                    .localfit_list[fit_index]
+                    .mdtablemodel
+                )
+            )
+        return
+
+    def delete_localfit(self, test_index, fit_index):
+        self.test_suite.test_list[test_index].delete_localfit(fit_index)
+        self.signal_send_localfit_name_list.emit(
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+        )
+        # If the test is
+        return
+
+    def edit_localfit_name(self, test_index: int, fit_index: int, name: str):
+        # Make sure that the name isn't empty
+        if name == "":
+            self.signal_error.emit("Fit Name cannot be an empty string.")
+        elif name in self.test_suite.test_list[test_index].get_localfit_names():
+            self.signal_error.emit("Fit Name already exists for the current test.")
+        else:
+            self.test_suite.test_list[test_index].localfit_list[fit_index].name = name
+            primary_index = self.get_current_primary_localfit(
+                self.test_suite.test_list[test_index]
+            )
+            if primary_index == fit_index:
+                self.test_suite.test_list[test_index].localfit_list[
+                    fit_index
+                ].promote_primary()
+
+            self.signal_send_localfit_name_list.emit(
+                fit_index,
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+            )
+
+        return
+
+    def change_localfit_primary(self, test_index, fit_index):
+        print("We're in!")
+        current_primary = self.get_current_primary_localfit(
+            self.test_suite.test_list[test_index]
+        )
+        if current_primary == -1:
+            pass
+        else:
+            # Demote the current primary
+            self.test_suite.test_list[test_index].localfit_list[
+                current_primary
+            ].demote_primary()
+
+        # Promote the new primary
+        self.test_suite.test_list[test_index].localfit_list[fit_index].promote_primary()
+
+        self.signal_send_localfit_name_list.emit(
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+        )
+
+        return
+
+    @staticmethod
+    def get_current_primary_localfit(test: data_classes.Test):
+        index = -1
+        for i in range(test.num_localfits):
+            if test.localfit_list[i].primary is True:
+                index = i
+            else:
+                pass
+        return index
+
+    # @staticmethod
+    # def get_primary_localfit_list(test: data_classes.Test):
+    #     # Returns a list that shows whether or not each localfit is primary.
+    #     #   An entry will show false if the test is not the primary fit, and will be true
+    #     #   when it is the primary fit.
+    #
+    #     lis = []
+    #     for i in range(len(test.localfit_list)):
+    #         if test.localfit_list[i].primary is True:
+    #             lis.append(True)
+    #         else:
+    #             lis.append(False)
+    #
+    #     return lis
+
+    def save_localfit(self, test_index, fit_index, mdtablemodel: mdmodel.MdTableModel):
+        self.test_suite.test_list[test_index].localfit_list[
+            fit_index
+        ].mdtablemodel = mdtablemodel
+        return
