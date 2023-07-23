@@ -91,7 +91,7 @@ class MainWindow(qtw.QMainWindow):
         self.view.signal_request_localfit_mdmodel.connect(
             self.model.send_localfit_mdmodel
         )
-        self.model.signal_send_mdmodel.connect(self.view.update_mdwidget_mdmodel)
+        self.model.signal_send_mdtablemodel.connect(self.view.update_mdwidget_mdmodel)
 
         # Set up the signals to delete a local fit from a test.
         self.ui.button_lf_deletefit.clicked.connect(self.view.delete_lf_localfit)

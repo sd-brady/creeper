@@ -1,6 +1,8 @@
 from pprint import pprint
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
+from PyQt5 import QtGui as qtg
+
 import pandas as pd
 from matplotlib.backends.backend_qt5agg import (
     NavigationToolbar2QT as NavigationToolbar,
@@ -23,12 +25,12 @@ class View(qtw.QWidget):
     signal_gui_units_changed = qtc.pyqtSignal()
     signal_localfit_added = qtc.pyqtSignal(int, data_classes.LocalFit)
     signal_request_localfit = qtc.pyqtSignal(int, int)
-    signal_request_localfit_list = qtc.pyqtSignal(int)
+    signal_request_localfit_list = qtc.pyqtSignal(int, int)
     signal_request_localfit_mdmodel = qtc.pyqtSignal(int, int)
     signal_delete_localfit = qtc.pyqtSignal(int, int)
     signal_edit_localfit_name = qtc.pyqtSignal(int, int, str)
     signal_make_localfit_primary = qtc.pyqtSignal(int, int)
-    signal_save_localfit = qtc.pyqtSignal(int, int, mdmodel.MdModel)
+    signal_save_localfit = qtc.pyqtSignal(int, int, mdmodel.MdTableModel)
     signal_edit_test = qtc.pyqtSignal(
         int, str, str, data_classes.PlotColors, data_classes.ActiveState
     )
@@ -269,14 +271,21 @@ class View(qtw.QWidget):
 
         return
 
-    def lf_fitlist_changed(self, name_list: list[str]):
+    def lf_fitlist_changed(self, primary_index: int, name_list: list[str]):
         # Clear the MdWidget
         self._ui.localfit_mdwidget.clear_table()
 
         # Add the name_list to the fit list QListWidget
         self._ui.list_lf_fitlist.clear()
-        for item_text in name_list:
+        for i, item_text in enumerate(name_list):
+            font = qtg.QFont()
+            if i == primary_index:
+                font.setBold(True)
+            else:
+                font.setBold(False)
+
             item = qtw.QListWidgetItem(item_text)
+            item.setFont(font)
             item.setTextAlignment(qtc.Qt.AlignHCenter)
             self._ui.list_lf_fitlist.addItem(item)
 
@@ -424,13 +433,13 @@ class View(qtw.QWidget):
     def localfit_place_softsalt(self):
         softsalt_model = mdmodel.MdModel()
         softsalt_model.set_soft_salt(self.get_gui_unit_system())
-        self._ui.localfit_mdwidget.place_mdmodel(softsalt_model)
+        self._ui.localfit_mdwidget.place_mdmodel_val(softsalt_model)
         return
 
     def localfit_place_hardsalt(self):
         hardsalt_model = mdmodel.MdModel()
         hardsalt_model.set_hard_salt(self.get_gui_unit_system())
-        self._ui.localfit_mdwidget.place_mdmodel(hardsalt_model)
+        self._ui.localfit_mdwidget.place_mdmodel_val(hardsalt_model)
         return
 
     def add_localfit(self):
@@ -442,8 +451,8 @@ class View(qtw.QWidget):
             pass
         elif self._ui.localfit_mdwidget.validate():
             gui_usys = self.get_gui_unit_system()
-            md_model = self._ui.localfit_mdwidget.get_table_mdmodel(gui_usys)
-            md_model.convert_usys_to_base()
+            mdtablemodel = self._ui.localfit_mdwidget.get_table_mdmodel(gui_usys)
+            mdtablemodel.convert_usys_to_base()
 
             dialog = tables.LocalFitNameDialog(name="")
             if dialog.exec():
@@ -451,7 +460,7 @@ class View(qtw.QWidget):
             else:
                 fit_name = ""
 
-            localfit = data_classes.LocalFit(mdmodel=md_model, name=fit_name)
+            localfit = data_classes.LocalFit(mdtablemodel=mdtablemodel, name=fit_name)
             self.signal_localfit_added.emit(row, localfit)
         else:
             print("Invalid User Input.")
@@ -468,27 +477,37 @@ class View(qtw.QWidget):
         return
 
     def request_localfit_name_list(self, test_index: int):
-        self.signal_request_localfit_list.emit(test_index)
+        self.signal_request_localfit_list.emit(test_index, -1)
         return
 
-    def update_lf_fitlist(self, name_list: list):
+    def update_lf_fitlist(self, primary_index, name_list: list):
         self._ui.list_lf_fitlist.clear()
-        for name in name_list:
+        for i, name in enumerate(name_list):
+            font = qtg.QFont()
+            if i == primary_index:
+                font.setBold(True)
+            else:
+                font.setBold(False)
+
             item = qtw.QListWidgetItem(name)
+            item.setFont(font)
             item.setTextAlignment(qtc.Qt.AlignHCenter)
             self._ui.list_lf_fitlist.addItem(item)
+
         self._ui.list_lf_fitlist.setCurrentRow(-1)
         return
 
-    def update_mdwidget_mdmodel(self, md_model: mdmodel.MdModel):
+    def update_mdwidget_mdmodel(self, mdtablemodel: mdmodel.MdTableModel):
         # Get the gui unitsystem
         gui_usys = self.get_gui_unit_system()
 
         # Convert the mdmodel to gui units
-        md_model.convert_usys(gui_usys)
+        mdtablemodel.val_model.convert_usys(gui_usys)
+        mdtablemodel.min_model.convert_usys(gui_usys)
+        mdtablemodel.max_model.convert_usys(gui_usys)
 
         # Place the mdmodel in the mdwidget
-        self._ui.localfit_mdwidget.place_mdmodel(md_model)
+        self._ui.localfit_mdwidget.place_mdtablemodel(mdtablemodel)
 
         return
 
@@ -516,6 +535,9 @@ class View(qtw.QWidget):
             pass
         else:
             current_name = self._ui.list_lf_fitlist.currentItem().text()
+            if current_name[:1] == "* " and current_name[-2:] == " *":
+                current_name = "* " + current_name + " *"
+
             dialog = tables.LocalFitNameDialog(name=current_name)
             if dialog.exec():
                 new_name = dialog.get_name()

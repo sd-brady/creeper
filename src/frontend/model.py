@@ -13,9 +13,9 @@ class Model(qtc.QObject):
     signal_error = qtc.pyqtSignal(str)
     signal_send_test = qtc.pyqtSignal(data_classes.Test)
     signal_send_testsuite = qtc.pyqtSignal(data_classes.TestSuite)
-    signal_lf_fitlist_changed = qtc.pyqtSignal(list)
-    signal_send_localfit_name_list = qtc.pyqtSignal(list)
-    signal_send_mdmodel = qtc.pyqtSignal(mdmodel.MdModel)
+    signal_lf_fitlist_changed = qtc.pyqtSignal(int, list)
+    signal_send_localfit_name_list = qtc.pyqtSignal(int, list)
+    signal_send_mdtablemodel = qtc.pyqtSignal(mdmodel.MdTableModel)
 
     def __init__(self):
         super().__init__()
@@ -188,17 +188,23 @@ class Model(qtc.QObject):
             self.signal_error.emit("Name of Local Fit cannot be an empty string.")
         else:
             self.test_suite.test_list[test_index].add_localfit(localfit)
-            self.signal_lf_fitlist_changed.emit(
-                deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+
+            # Get the index of the primary fit
+            primary_index = self.get_current_primary_localfit(
+                self.test_suite.test_list[test_index]
             )
 
-        print("Num_localfits: ", self.test_suite.test_list[test_index].num_localfits)
+            self.signal_lf_fitlist_changed.emit(
+                primary_index,
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+            )
 
         return
 
-    def send_localfit_name_list(self, test_index: int):
+    def send_localfit_name_list(self, test_index: int, fit_index: int):
         self.signal_send_localfit_name_list.emit(
-            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
         )
         return
 
@@ -206,11 +212,11 @@ class Model(qtc.QObject):
         if test_index == -1 or fit_index == -1:
             pass
         else:
-            self.signal_send_mdmodel.emit(
+            self.signal_send_mdtablemodel.emit(
                 deepcopy(
                     self.test_suite.test_list[test_index]
                     .localfit_list[fit_index]
-                    .mdmodel
+                    .mdtablemodel
                 )
             )
         return
@@ -218,7 +224,8 @@ class Model(qtc.QObject):
     def delete_localfit(self, test_index, fit_index):
         self.test_suite.test_list[test_index].delete_localfit(fit_index)
         self.signal_send_localfit_name_list.emit(
-            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
         )
         # If the test is
         return
@@ -231,9 +238,19 @@ class Model(qtc.QObject):
             self.signal_error.emit("Fit Name already exists for the current test.")
         else:
             self.test_suite.test_list[test_index].localfit_list[fit_index].name = name
-            self.signal_send_localfit_name_list.emit(
-                deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+            primary_index = self.get_current_primary_localfit(
+                self.test_suite.test_list[test_index]
             )
+            if primary_index == fit_index:
+                self.test_suite.test_list[test_index].localfit_list[
+                    fit_index
+                ].promote_primary()
+
+            self.signal_send_localfit_name_list.emit(
+                fit_index,
+                deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
+            )
+
         return
 
     def change_localfit_primary(self, test_index, fit_index):
@@ -253,7 +270,8 @@ class Model(qtc.QObject):
         self.test_suite.test_list[test_index].localfit_list[fit_index].promote_primary()
 
         self.signal_send_localfit_name_list.emit(
-            deepcopy(self.test_suite.test_list[test_index].get_localfit_names())
+            fit_index,
+            deepcopy(self.test_suite.test_list[test_index].get_localfit_names()),
         )
 
         return
@@ -268,8 +286,23 @@ class Model(qtc.QObject):
                 pass
         return index
 
-    def save_localfit(self, test_index, fit_index, md_model: mdmodel.MdModel):
+    # @staticmethod
+    # def get_primary_localfit_list(test: data_classes.Test):
+    #     # Returns a list that shows whether or not each localfit is primary.
+    #     #   An entry will show false if the test is not the primary fit, and will be true
+    #     #   when it is the primary fit.
+    #
+    #     lis = []
+    #     for i in range(len(test.localfit_list)):
+    #         if test.localfit_list[i].primary is True:
+    #             lis.append(True)
+    #         else:
+    #             lis.append(False)
+    #
+    #     return lis
+
+    def save_localfit(self, test_index, fit_index, mdtablemodel: mdmodel.MdTableModel):
         self.test_suite.test_list[test_index].localfit_list[
             fit_index
-        ].mdmodel = md_model
+        ].mdtablemodel = mdtablemodel
         return

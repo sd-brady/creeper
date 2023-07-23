@@ -218,3 +218,65 @@ class MdModel:
 
     def validate_mdmodel(self):
         return
+
+
+class MdModelFlags:
+    def __init__(
+        self,
+        a1_flag: bool,
+        n1_flag: bool,
+        q1divr_flag: bool,
+        a2_flag: bool,
+        n2_flag: bool,
+        q2divr_flag: bool,
+        b1_flag: bool,
+        b2_flag: bool,
+        q_flag: bool,
+        sig0_flag: bool,
+        k0_flag: bool,
+        m_flag: bool,
+        c_flag: bool,
+        alpha_flag: bool,
+        beta_flag: bool,
+        delta_flag: bool,
+        mu_flag: bool,
+    ):
+        self.a1_flag = a1_flag
+        self.n1_flag = n1_flag
+        self.q1divr_flag = q1divr_flag
+        self.a2_flag = a2_flag
+        self.n2_flag = n2_flag
+        self.q2divr_flag = q2divr_flag
+        self.b1_flag = b1_flag
+        self.b2_flag = b2_flag
+        self.q_flag = q_flag
+        self.sig0_flag = sig0_flag
+        self.k0_flag = k0_flag
+        self.m_flag = m_flag
+        self.c_flag = c_flag
+        self.alpha_flag = alpha_flag
+        self.beta_flag = beta_flag
+        self.delta_flag = delta_flag
+        self.mu_flag = mu_flag
+        return
+
+
+class MdTableModel:
+    def __init__(
+        self,
+        val_model: MdModel,
+        min_model: MdModel,
+        max_model: MdModel,
+        flag_model: MdModelFlags,
+    ):
+        self.val_model = val_model
+        self.min_model = min_model
+        self.max_model = max_model
+        self.flag_model = flag_model
+        return
+
+    def convert_usys_to_base(self):
+        self.val_model.convert_usys_to_base()
+        self.min_model.convert_usys_to_base()
+        self.max_model.convert_usys_to_base()
+        return
