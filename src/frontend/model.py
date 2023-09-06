@@ -286,23 +286,17 @@ class Model(qtc.QObject):
                 pass
         return index
 
-    # @staticmethod
-    # def get_primary_localfit_list(test: data_classes.Test):
-    #     # Returns a list that shows whether or not each localfit is primary.
-    #     #   An entry will show false if the test is not the primary fit, and will be true
-    #     #   when it is the primary fit.
-    #
-    #     lis = []
-    #     for i in range(len(test.localfit_list)):
-    #         if test.localfit_list[i].primary is True:
-    #             lis.append(True)
-    #         else:
-    #             lis.append(False)
-    #
-    #     return lis
-
     def save_localfit(self, test_index, fit_index, mdtablemodel: mdmodel.MdTableModel):
         self.test_suite.test_list[test_index].localfit_list[
             fit_index
         ].mdtablemodel = mdtablemodel
+        return
+
+    def save_config(self, save_filename: str) -> None:
+        """
+        This function is called when a signal from the view class is received
+        to save the current config. The model is collected and saved to and
+        configuration file (json).
+        """
+
         return

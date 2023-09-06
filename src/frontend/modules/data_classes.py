@@ -1,8 +1,7 @@
 from enum import Enum
 
 
-from .unit_system import UnitSystem
-from .mdmodel import MdModel, MdTableModel
+from .mdmodel import MdTableModel
 
 
 class PlotType(Enum):
@@ -105,8 +104,8 @@ class Test:
         self.test_data = test_data
 
         # Initialize the local fits list
-        self.localfit_list = []
-        self.num_localfits = 0
+        self.localfit_list: list[LocalFit] = []
+        self.num_localfits: int = 0
 
         return
 
@@ -134,14 +133,14 @@ class TestSuite:
     ):
         # This is a list imported creep tests. Will be updated
         #   when a new test is imported or deleted.
-        self.test_list = []
+        self.test_list: list[Test] = []
         # This will store the number of imported tests. Will be updated
         #   when a new test is imported or deleted.
-        self.num_tests = 0
+        self.num_tests: int = 0
 
         return
 
-    def add_test(self, test):
+    def add_test(self, test: Test):
         self.test_list.append(test)
         self.num_tests += 1
         return
