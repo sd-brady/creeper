@@ -69,6 +69,7 @@ class Model(qtc.QObject):
 
         self.test_suite_changed.emit(deepcopy(self.test_suite))
         return
+        
 
     def move_test_up(self, test_index: int):
         (
@@ -94,7 +95,7 @@ class Model(qtc.QObject):
 
         if valid:
             self.test_suite.test_list[test_index].name = name
-            self.test_suite.test_list[test_index].stress = stress
+            self.test_suite.test_list[test_index].stress = str(stress)
             self.test_suite.test_list[test_index].color = color
             self.test_suite.test_list[test_index].active_state = active
             self.test_suite_changed.emit(deepcopy(self.test_suite))

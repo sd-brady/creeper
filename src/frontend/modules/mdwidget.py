@@ -201,14 +201,9 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
 
     def set_lineedit_validators(self):
         for i in range(len(self.lineedit_widget_list)):
-            self.lineedit_widget_list[i].setValidator(
-                qtg.QDoubleValidator(
-                    bottom=-1e35,
-                    decimals=10,
-                    notation=qtg.QDoubleValidator.ScientificNotation,
-                    top=1.0e35,
-                )
-            )
+            validator = qtg.QDoubleValidator(bottom=-1e35, top=1e35, decimals=10)
+            validator.setNotation(qtg.QDoubleValidator.ScientificNotation)
+            self.lineedit_widget_list[i].setValidator(validator)
         return
 
     # Formatting Function

@@ -1,6 +1,7 @@
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
+from typing import Optional
 
 from . import unit_system
 from . import data_classes
@@ -106,17 +107,17 @@ class TestDataTableModel(qtc.QAbstractTableModel):
 
         return
 
-    def rowCount(self, parent):
+    def rowCount(self, parent: Optional[qtc.QModelIndex]=None):
         return len(self._data[0])
 
-    def columnCount(self, parent):
+    def columnCount(self, parent: Optional[qtc.QModelIndex]=None):
         return len(self._headers)
 
-    def data(self, index, role):
+    def data(self, index, role=None):
         if role in (qtc.Qt.DisplayRole, qtc.Qt.EditRole):  # type: ignore
             return self._data[index.column()][index.row()]
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role=None):
         if (
             orientation == qtc.Qt.Horizontal  # type: ignore
             and role == qtc.Qt.DisplayRole  # type: ignore
@@ -125,7 +126,7 @@ class TestDataTableModel(qtc.QAbstractTableModel):
         else:
             return super().headerData(section, orientation, role)
 
-    def setData(self, index, value, role):
+    def setData(self, index, value, role=None):
         if index.isValid() and role == qtc.Qt.EditRole:  # type: ignore
             self._data[index.column()][index.row()] = value
             self.dataChanged.emit(index, index, [role])
@@ -184,17 +185,17 @@ class TestListTableModel(qtc.QAbstractTableModel):
         self.new_data()
         return
 
-    def rowCount(self, parent):
+    def rowCount(self, parent: Optional[qtc.QModelIndex]=None):
         return self.num_rows
 
-    def columnCount(self, parent):
+    def columnCount(self, parent: Optional[qtc.QModelIndex]=None):
         return len(self._headers)
 
-    def data(self, index, role):
+    def data(self, index, role=None):
         if role in (qtc.Qt.DisplayRole, qtc.Qt.EditRole):  # type: ignore
             return self._data[index.column()][index.row()]
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role=None):
         if (
             orientation == qtc.Qt.Horizontal  # type: ignore
             and role == qtc.Qt.DisplayRole  # type: ignore
@@ -203,7 +204,7 @@ class TestListTableModel(qtc.QAbstractTableModel):
         else:
             return super().headerData(section, orientation, role)
 
-    def setData(self, index, value, role):
+    def setData(self, index, value, role=None):
         if index.isValid() and role == qtc.Qt.EditRole:  # type: ignore
             self._data[index.column()][index.row()] = value
             self.dataChanged.emit(index, index, [role])
@@ -396,7 +397,7 @@ class EditTestDialog(qtw.QDialog):
         self.inputs = []
 
         # QLineEdit for Test Name
-        self.lineedit_testname = qtw.QLineEdit(self, text=name)
+        self.lineedit_testname = qtw.QLineEdit(self, text=name: str)
         layout.addRow("Test Name", self.lineedit_testname)
 
         # QLineEdit for Applied Deviatoric Stress

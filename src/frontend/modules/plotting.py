@@ -34,7 +34,7 @@ class MyMplCanvas(FigureCanvas):
 class SinglePlot_Strain_Canvas(MyMplCanvas):
     def __init__(
         self,
-        usys: data_classes.UnitSystem,
+        usys: unit_system.UnitSystem,
         plot_type: data_classes.PlotType,
         *args,
         **kwargs,
@@ -123,7 +123,7 @@ class SinglePlot_Strain_Canvas(MyMplCanvas):
 class MultiPlot_Strain_Canvas(MyMplCanvas):
     def __init__(
         self,
-        usys: data_classes.UnitSystem,
+        usys: unit_system.UnitSystem,
         plot_type: data_classes.PlotType,
         *args,
         **kwargs,

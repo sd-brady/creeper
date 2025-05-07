@@ -161,7 +161,7 @@ def convert_testsuite_from_base(
 
 def convert_test_from_base(test: "data_classes.Test", gui_usys: UnitSystem):
     # Convert "Applied Deviatoric Stress" to gui units
-    test.stress = convert_stress_from_base(float(test.stress), gui_usys.stress)
+    test.stress = str(convert_stress_from_base(float(test.stress), gui_usys.stress))
 
     # Convert "test.test_data.time" to base units
     for i in range(len(test.test_data.time)):
@@ -227,7 +227,7 @@ def get_base_unit_system():
 
 def convert_test_to_base(test: "data_classes.Test", test_usys: UnitSystem):
     # Convert "Applied Deviatoric Stress" to base units
-    test.stress = convert_stress_to_base(float(test.stress), test_usys.stress)
+    test.stress = str(convert_stress_to_base(float(test.stress), test_usys.stress))
 
     # Convert "test.test_data.time" to base units
     for i in range(len(test.test_data.time)):

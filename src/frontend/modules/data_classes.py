@@ -166,6 +166,5 @@ def empty_test_class():
         PlotColors("Blue"),
         ActiveState("Off"),
         TestData([], [], [], []),
-        [],
     )
     return empty_test
