@@ -50,7 +50,7 @@ class View(qtw.QWidget):
 
         self.config_slots_and_signals()
 
-        # self._ui.localfit_mdwidget.a1_value.setText("Tiddies!")
+        # self._ui.localfit_mdwidget.a1_value.setText("test!")
 
         return
 
@@ -593,13 +593,23 @@ class View(qtw.QWidget):
         ]
 
         if self._ui.localfit_mdwidget.gamma_radio.isChecked():
-            for i in range(len(widget_list)):
-                darker_color = "#333333"
-                # Uncheck widget list
-                # Deactivate the widget list
-                widget_list[i].setCheckable(False)
-                widget_list[i].setChecked(True)
-                widget_list[i].setStyleSheet(f"QCheckBox::indicator {{ background-color: {darker_color}; }}")
+            dialog = tables.gammaRadioDialog()
+            if dialog.exec():
+                for i in range(len(widget_list)):
+                    darker_color = "#333333"
+                    # Uncheck widget list
+                    # Deactivate the widget list
+                    widget_list[i].setCheckable(False)
+                    widget_list[i].setChecked(True)
+                    widget_list[i].setStyleSheet(f"QCheckBox::indicator {{ background-color: {darker_color}; }}")
+            else: 
+                # Set the gamma value to 0.0
+                self._ui.localfit_mdwidget.gamma_radio.setChecked(False)
+                for i in range(len(widget_list)):
+                    # Activate the widget list
+                    widget_list[i].setCheckable(True)
+                    widget_list[i].setChecked(False)
+                    widget_list[i].setStyleSheet("")
             
         else:
             # Set the gamma value to 0.0

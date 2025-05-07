@@ -468,3 +468,20 @@ class LocalFitNameDialog(qtw.QDialog):
 
     def get_name(self) -> str:
         return self.lineedit_fitname.text()
+
+class gammaRadioDialog(qtw.QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Are you sure?")
+
+        layout = qtw.QVBoxLayout(self)
+        widget = qtw.QLabel("This will calculate the gamma value based on A1. Values for A2, B1, and B2 will be recalculated accordingly.")
+        layout.addWidget(widget)
+
+        buttonBox = qtw.QDialogButtonBox(
+            qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel, self
+        )
+        layout.addWidget(buttonBox)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        return
