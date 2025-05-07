@@ -28,6 +28,7 @@ class MdModel:
         self.beta = -7.738
         self.delta = 0.58
         self.mu = 12400.0
+        self.gamma = 1.0
         self.convert_usys(usys)
         self.unit_system = usys
         return
@@ -55,6 +56,7 @@ class MdModel:
         self.beta = -7.738
         self.delta = 0.58
         self.mu = 12400.0
+        self.gamma = 0
 
         self.convert_usys(usys)
         self.unit_system = usys
@@ -79,6 +81,7 @@ class MdModel:
         beta,
         delta,
         mu,
+        gamma,
         usys: unit_system.UnitSystem,
     ):
         self.a1 = a1
@@ -98,6 +101,7 @@ class MdModel:
         self.beta = beta
         self.delta = delta
         self.mu = mu
+        self.gamma = gamma
         self.unit_system = usys
         return
 
@@ -240,6 +244,7 @@ class MdModelFlags:
         beta_flag: bool,
         delta_flag: bool,
         mu_flag: bool,
+        gamma_radio: bool,
     ):
         self.a1_flag = a1_flag
         self.n1_flag = n1_flag
@@ -258,6 +263,7 @@ class MdModelFlags:
         self.beta_flag = beta_flag
         self.delta_flag = delta_flag
         self.mu_flag = mu_flag
+        self.gamma_radio = gamma_radio
         return
 
 

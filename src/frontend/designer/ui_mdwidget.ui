@@ -2131,16 +2131,28 @@
          </widget>
         </item>
         <item row="20" column="3">
-         <widget class="QLineEdit" name="gamma_value"/>
+         <widget class="QLineEdit" name="gamma_value">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
         <item row="20" column="4">
-         <widget class="QLineEdit" name="gamma_min"/>
+         <widget class="QLineEdit" name="gamma_min">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
         <item row="20" column="5">
-         <widget class="QLineEdit" name="gamma_max"/>
+         <widget class="QLineEdit" name="gamma_max">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
         <item row="20" column="6" alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="gamma_flag">
+         <widget class="QRadioButton" name="gamma_radio">
           <property name="minimumSize">
            <size>
             <width>15</width>
@@ -2155,9 +2167,6 @@
           </property>
           <property name="text">
            <string/>
-          </property>
-          <property name="tristate">
-           <bool>false</bool>
           </property>
          </widget>
         </item>

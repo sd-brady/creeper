@@ -397,7 +397,7 @@ class EditTestDialog(qtw.QDialog):
         self.inputs = []
 
         # QLineEdit for Test Name
-        self.lineedit_testname = qtw.QLineEdit(self, text=name: str)
+        self.lineedit_testname = qtw.QLineEdit(self, text=name)
         layout.addRow("Test Name", self.lineedit_testname)
 
         # QLineEdit for Applied Deviatoric Stress

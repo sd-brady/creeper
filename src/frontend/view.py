@@ -582,3 +582,30 @@ class View(qtw.QWidget):
             self.signal_save_localfit.emit(test_index, fit_index, md_model)
         else:
             print("Invalid User Input.")
+
+    def gamma_radio_toggled(self):
+        # Get the current state of the gamma radio button
+        widget_list = [
+            self._ui.localfit_mdwidget.a1_flag,
+            self._ui.localfit_mdwidget.a2_flag,
+            self._ui.localfit_mdwidget.b1_flag,
+            self._ui.localfit_mdwidget.b2_flag
+        ]
+
+        if self._ui.localfit_mdwidget.gamma_radio.isChecked():
+            for i in range(len(widget_list)):
+                darker_color = "#333333"
+                # Uncheck widget list
+                # Deactivate the widget list
+                widget_list[i].setCheckable(False)
+                widget_list[i].setChecked(True)
+                widget_list[i].setStyleSheet(f"QCheckBox::indicator {{ background-color: {darker_color}; }}")
+            
+        else:
+            # Set the gamma value to 0.0
+            for i in range(len(widget_list)):
+                # Activate the widget list
+                widget_list[i].setCheckable(True)
+                widget_list[i].setChecked(False)
+                widget_list[i].setStyleSheet("")
+        return

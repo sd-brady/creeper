@@ -112,6 +112,9 @@ class MainWindow(qtw.QMainWindow):
         # Set up the signals to save a localfit
         self.ui.button_lf_savefit.clicked.connect(self.view.save_localfit)
         self.view.signal_save_localfit.connect(self.model.save_localfit)
+
+        # Set up the signals for gamma radio button
+        self.ui.localfit_mdwidget.gamma_radio.toggled.connect(self.view.gamma_radio_toggled)
         return
 
     def messagebox_error(self, message):

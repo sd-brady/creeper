@@ -30,6 +30,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_value,
             self.delta_value,
             self.mu_value,
+            self.gamma_value,
             self.a1_min,
             self.n1_min,
             self.q1divr_min,
@@ -47,6 +48,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_min,
             self.delta_min,
             self.mu_min,
+            self.gamma_min,
             self.a1_max,
             self.n1_max,
             self.q1divr_max,
@@ -64,6 +66,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_max,
             self.delta_max,
             self.mu_max,
+            self.gamma_max
         ]
 
         self.checkbox_widget_list = [
@@ -84,6 +87,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_flag,
             self.delta_flag,
             self.mu_flag,
+            self.gamma_radio
         ]
 
         self.value_widget_list = [
@@ -104,6 +108,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_value,
             self.delta_value,
             self.mu_value,
+            self.gamma_value
         ]
 
         self.min_widget_list = [
@@ -124,6 +129,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_min,
             self.delta_min,
             self.mu_min,
+            self.gamma_min
         ]
 
         self.max_widget_list = [
@@ -144,6 +150,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             self.beta_max,
             self.delta_max,
             self.mu_max,
+            self.gamma_max
         ]
 
         self.time_widget_list = [
@@ -256,6 +263,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
         self.beta_value.setText(self.format_value_to_string(md_model.beta))
         self.delta_value.setText(self.format_value_to_string(md_model.delta))
         self.mu_value.setText(self.format_value_to_string(md_model.mu))
+        self.gamma_value.setText(self.format_value_to_string(md_model.gamma))
 
         return
 
@@ -278,6 +286,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
         self.beta_min.setText(self.format_value_to_string(md_model.beta))
         self.delta_min.setText(self.format_value_to_string(md_model.delta))
         self.mu_min.setText(self.format_value_to_string(md_model.mu))
+        self.gamma_min.setText(self.format_value_to_string(md_model.gamma))
 
         return
 
@@ -300,6 +309,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
         self.beta_max.setText(self.format_value_to_string(md_model.beta))
         self.delta_max.setText(self.format_value_to_string(md_model.delta))
         self.mu_max.setText(self.format_value_to_string(md_model.mu))
+        self.gamma_max.setText(self.format_value_to_string(md_model.gamma))
 
         return
 
@@ -321,6 +331,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
         self.beta_flag.setChecked(mdflagmodel.beta_flag)
         self.delta_flag.setChecked(mdflagmodel.delta_flag)
         self.mu_flag.setChecked(mdflagmodel.mu_flag)
+        self.gamma_radio.setChecked(mdflagmodel.gamma_radio)
         return
 
     def clear_table(self):
@@ -358,6 +369,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             beta=float(self.beta_value.text()),
             delta=float(self.delta_value.text()),
             mu=float(self.mu_value.text()),
+            gamma=float(self.gamma_value.text()),
             usys=usys,
         )
         min_mdmodel = mdmodel.MdModel()
@@ -379,6 +391,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             beta=self.beta_min.text(),
             delta=self.delta_min.text(),
             mu=self.mu_min.text(),
+            gamma=self.gamma_min.text(),
             usys=usys,
         )
         max_mdmodel = mdmodel.MdModel()
@@ -400,6 +413,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             beta=self.beta_max.text(),
             delta=self.delta_max.text(),
             mu=self.mu_max.text(),
+            gamma=self.gamma_max.text(),
             usys=usys,
         )
 
@@ -421,6 +435,7 @@ class MdWidget(qtw.QWidget, ui_mdwidget.Ui_Form):
             beta_flag=self.beta_flag.isChecked(),
             delta_flag=self.delta_flag.isChecked(),
             mu_flag=self.mu_flag.isChecked(),
+            gamma_radio=self.gamma_radio.isChecked(),
         )
 
         table_mdmodel = mdmodel.MdTableModel(
