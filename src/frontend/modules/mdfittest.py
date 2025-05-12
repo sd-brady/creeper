@@ -2,7 +2,7 @@
 # Functions to do calculations and fits with mdmodel class
 
 from mdmodel import MdModel, MdTableModel
-from unit_system import 
+from unit_system import UnitSystem
 from numpy import exp,sinh,log10,zeros_like,diff
 from time import perf_counter
 from scipy.optimize import curve_fit
@@ -36,6 +36,7 @@ class TestData:
             return 1.0
 
     # Get predicted strain rate from MD Model Parameters
+    # def MDstrain(self,time,mdmodel):
     def MDstrain(self,time,a1,n1,q1divr,a2,n2,q2divr,b1,b2,q,sig0,k0,m,c,alpha,beta,delta,mu):
         # Create array for strain
         eps=zeros_like(time)

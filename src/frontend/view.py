@@ -61,8 +61,20 @@ class View(qtw.QWidget):
         # Test Suite Button
         self._ui.button_testsuite.clicked.connect(self.config_testsuite_button)
 
+        # Global Fits Button
+        self._ui.button_globalfits.clicked.connect(self.config_globalfits_button)
+
         # Local Fits Button
         self._ui.button_localfits.clicked.connect(self.config_localfits_button)
+        
+        # SS Rates Button
+        self._ui.button_ssrate.clicked.connect(self.config_ssrate_button)
+        
+        # Estar Button
+        self._ui.button_estar.clicked.connect(self.config_estar_button)
+        
+        # Delta Button
+        self._ui.button_delta.clicked.connect(self.config_delta_button)
 
         return
 
@@ -70,8 +82,24 @@ class View(qtw.QWidget):
         self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_testsuite)
         return
 
+    def config_globalfits_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_globalfits)
+        return
+    
     def config_localfits_button(self):
         self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_localfits)
+        return
+    
+    def config_ssrate_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_ssrate)
+        return
+    
+    def config_estar_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_estar)
+        return
+    
+    def config_delta_button(self):
+        self._ui.stacked_toplevel.setCurrentWidget(self._ui.tab_delta)
         return
 
     def config_slots_and_signals(
